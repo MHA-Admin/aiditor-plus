@@ -16,10 +16,12 @@ from docx.opc.constants import CONTENT_TYPE as CT, RELATIONSHIP_TYPE as RT
 from docx.opc.packuri import PackURI
 from docx.opc.part import Part
 from docx.oxml import parse_xml
-from docx.oxml.ns import nsdecls
+from docx.oxml.ns import nsdecls, qn
 
 from citation_links import CitationIndex
-from formatter import _ImportReport, _RunPropertyResolver, extract_form_data_from_docx
+from docx_export import generate_docx_from_form
+from formatter import _ImportReport, _RunPropertyResolver, extract_form_data_from_docx, generate_latex_from_form
+from test_formatter_templates import sample_article
 
 M_NS = 'xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math"'
 INLINE_EQUATION = (f'<m:oMath {M_NS}><m:r><m:t>E=m</m:t></m:r><m:sSup><m:e><m:r><m:t>c</m:t></m:r></m:e>'
@@ -143,9 +145,56 @@ class KnownScientificImportGaps(ScientificImportChecks):
         with self.assertRaises(AssertionError):
             self.check_footnote_text_and_reference_are_kept()
 
-    def test_gap_superscript_marker_after_year_breaks_citation_link(self):
-        with self.assertRaises(AssertionError):
-            self.check_superscript_marker_after_year_keeps_citation_link()
+
+class ClosedScientificImportGaps(ScientificImportChecks):
+    """Gaps closed in Phase 1; each was a `test_gap_*` test in Phase 0."""
+
+    def test_superscript_marker_after_year_keeps_citation_link(self):  # Phase 1.1
+        self.check_superscript_marker_after_year_keeps_citation_link()
+
+
+class CitationEndTests(unittest.TestCase):
+    """Phase 1.1: a footnote marker after the year ends a citation; nothing else changes."""
+
+    REFERENCES = ['Kaya, B., & Demir, C. (2021). Çevrim içi görünürlük. Örnek Dergi, 5(1), 20–34.',
+                  'Yılmaz, A. (2020). Kırsal kalkınma ve turizm. Örnek Yayınevi.']
+
+    def _linked(self, text):
+        return [text[start:end] for start, end, _ in CitationIndex(self.REFERENCES).spans(text)]
+
+    def test_superscript_markers_after_year(self):
+        self.assertEqual(self._linked('Yılmaz, 2020¹ bunu göstermiştir.'), ['Yılmaz, 2020'])
+        self.assertEqual(self._linked('Yılmaz (2020)² ve (Kaya & Demir, 2021)³⁴.'),
+                         ['Yılmaz (2020)', 'Kaya & Demir, 2021'])
+        # ("… ve Yılmaz, 2020" is deliberately not linked: it may be a multi-author tail.)
+        self.assertEqual(self._linked('Yılmaz, 2020⁰; Yılmaz, 2020⁹.'), ['Yılmaz, 2020', 'Yılmaz, 2020'])
+
+    def test_unchanged_boundaries(self):
+        # A different year, a year suffix or a longer number is still not this reference.
+        self.assertEqual(self._linked('Yılmaz, 2020a ve Yılmaz, 20201 ve Yılmaz, 2020_1.'), [])
+        self.assertEqual(self._linked('Yılmaz, 2020₁ alt simge değildir.'), [])
+        self.assertEqual(self._linked('Yılmaz, 2020. Yılmaz, 2020; (Yılmaz, 2020)'),
+                         ['Yılmaz, 2020', 'Yılmaz, 2020', 'Yılmaz, 2020'])
+
+    def _article(self):
+        data = sample_article()
+        data['references'] = '\n'.join(self.REFERENCES)
+        data['sections'] = [{'id': '0', 'name': 'Giriş', 'level': '1',
+                             'content': 'Bu bulgu Yılmaz, 2020¹ tarafından desteklenir.'}]
+        data['figtables'] = []
+        return data
+
+    def test_latex_links_citation_and_keeps_marker_outside_link(self):
+        tex = generate_latex_from_form(self._article(), {}, {})
+        self.assertIn(r'Bu bulgu \hyperlink{aiditor_ref_1}{Yılmaz, 2020}\textsuperscript{1} tarafından desteklenir.', tex)
+
+    def test_word_links_citation_and_keeps_marker_outside_link(self):
+        document = Document(io.BytesIO(generate_docx_from_form(self._article(), {}, {})))
+        paragraph = next(p for p in document.paragraphs if p.text.startswith('Bu bulgu'))
+        links = paragraph._p.findall(qn('w:hyperlink'))
+        self.assertEqual([''.join(t.text for t in link.iter(qn('w:t'))) for link in links], ['Yılmaz, 2020'])
+        self.assertEqual(links[0].get(qn('w:anchor')), 'aiditor_ref_1')
+        self.assertEqual(paragraph.text, 'Bu bulgu Yılmaz, 2020¹ tarafından desteklenir.')
 
 
 class ImportReportTests(unittest.TestCase):

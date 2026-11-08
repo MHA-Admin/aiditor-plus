@@ -3,6 +3,9 @@ import re
 from collections import defaultdict
 
 YEAR = r'(?:18|19|20|21)\d{2}[a-z]?'
+# A citation ends where a word ends. Unicode superscripts (¹ ² ³ ⁰–⁹ ⁿ …) count as
+# word characters in Python regexes, yet after a year they are footnote markers.
+CITATION_END = r'(?![^\W²³¹⁰-ⁿ])'
 # APA reference authors use surname, initials. Full corporate names are supported too.
 AUTHOR = re.compile(r"(?:^|[,;&]\s*|\band\s+|\bve\s+)([^,;&\d]+?),\s*(?:[A-ZÇĞİÖŞÜ]\.(?:\s*[-–]?\s*[A-ZÇĞİÖŞÜ]\.)*)")
 
@@ -41,7 +44,7 @@ class CitationIndex:
             else:
                 author = first
             # No bare four-digit numbers: require a recognizable author/year citation.
-            pattern = r'(?<![\w\-])' + author + r'(?:\s*,\s*|\s+\(\s*)' + year.group(1) + r'(?![\w])'
+            pattern = r'(?<![\w\-])' + author + r'(?:\s*,\s*|\s+\(\s*)' + year.group(1) + CITATION_END
             key = pattern.replace('İ', 'I').lower()
             groups[key].append(index)
             patterns[key] = pattern
