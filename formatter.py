@@ -11,6 +11,7 @@ import zipfile
 import csv
 import math
 import unicodedata
+from contextvars import ContextVar
 from urllib.parse import quote
 from journal_templates import normalize_settings
 from page_furniture import page_value, revision_dates, short_authors
@@ -260,6 +261,11 @@ class _ImportReport:
         return {key: count for key, count in self.counts.items() if count > 0}
 
 
+_ImportReport.MESSAGES['hidden_text'] = (
+    "{count} gizli metin parçası (Word'de gizli olarak biçimlendirilmiş) makale içeriğine aktarılmadı."
+)
+
+
 _ON_OFF_FALSE = {'0', 'false', 'off'}
 
 
@@ -350,6 +356,44 @@ def _on_off_attribute(value: str | None) -> bool:
     return value is not None and value.strip().lower() not in _ON_OFF_FALSE
 
 
+class _HiddenTextContext:
+    """Per-import state for hidden text (Phase 1.2).
+
+    ``pieces`` maps each paragraph element to its number of hidden text
+    pieces, so a paragraph read several times (classification, merged table
+    cells) is counted once.
+    """
+
+    def __init__(self, document: Document):
+        self.resolver = _RunPropertyResolver(document)
+        self.pieces: dict[object, int] = {}
+
+    def total(self) -> int:
+        return sum(self.pieces.values())
+
+
+_HIDDEN_TEXT_CONTEXT: ContextVar[_HiddenTextContext | None] = ContextVar(
+    '_HIDDEN_TEXT_CONTEXT', default=None)
+
+
+def _run_is_hidden(run_element, paragraph_element) -> bool:
+    """True when Word hides this run as hidden text (effective ``w:vanish``).
+
+    Only ``w:vanish`` counts. ``w:webHidden`` (hidden in Web Layout only,
+    e.g. TOC page numbers), ``w:specVanish`` and the paragraph mark's own
+    ``w:pPr/w:rPr`` do not hide run text. Outside a Word import nothing is
+    treated as hidden, so other callers keep their previous behaviour.
+    """
+    context = _HIDDEN_TEXT_CONTEXT.get()
+    if context is None:
+        return False
+    return context.resolver.is_on(run_element, paragraph_element, 'vanish')
+
+
+def _visible_runs(paragraph: Paragraph) -> list:
+    return [run for run in paragraph.runs if not _run_is_hidden(run._r, paragraph._p)]
+
+
 def _paragraph_text(paragraph) -> str:
     """Visible paragraph text, including citation fields and content controls.
 
@@ -357,17 +401,33 @@ def _paragraph_text(paragraph) -> str:
     ``w:fldSimple`` or complex fields) or content controls (Mendeley, some
     Zotero/Word versions: ``w:sdt``). python-docx's ``Paragraph.text`` skips
     those wrappers, which silently removed the citations on import.
+
+    During a Word import, runs hidden with ``w:vanish`` (directly or through
+    styles) are skipped and counted; a run of consecutive hidden text is one
+    piece.
     """
     parts = []
+    paragraph_element = paragraph._p
+    hidden_pieces = 0
+    previous_hidden = False
 
     def walk(node):
+        nonlocal hidden_pieces, previous_hidden
         for child in node:
             tag = child.tag
             if tag in _HIDDEN_TEXT_CONTAINERS:
                 continue
             if tag == qn('w:sdt') and child.find(qn('w:sdtPr') + '/' + qn('w:showingPlcHdr')) is not None:
                 continue  # an empty content control still shows "Click here to enter text"
+            if tag == qn('w:r') and _run_is_hidden(child, paragraph_element):
+                if any((t.text or '').strip() for t in child.iter(qn('w:t'))):
+                    if not previous_hidden:
+                        hidden_pieces += 1
+                    previous_hidden = True
+                continue
             if tag == qn('w:t'):
+                if (child.text or '').strip():
+                    previous_hidden = False
                 parts.append(child.text or '')
             elif tag in (qn('w:tab'), qn('w:ptab')):
                 parts.append('\t')
@@ -380,6 +440,9 @@ def _paragraph_text(paragraph) -> str:
                 walk(child)
 
     walk(paragraph._p)
+    context = _HIDDEN_TEXT_CONTEXT.get()
+    if context is not None:
+        context.pieces[paragraph_element] = hidden_pieces
     return ''.join(parts)
 
 
@@ -461,7 +524,7 @@ def _heading_level(para) -> int:
 
 
 def _has_bold(para) -> bool:
-    return any(run.bold for run in para.runs if run.text.strip())
+    return any(run.bold for run in _visible_runs(para) if run.text.strip())
 
 
 def _numbered_section_title(text: str) -> tuple[str, int] | None:
@@ -476,7 +539,7 @@ def _numbered_section_title(text: str) -> tuple[str, int] | None:
 
 
 def _paragraph_is_all_bold(paragraph: Paragraph) -> bool:
-    runs = [run for run in paragraph.runs if run.text.strip()]
+    runs = [run for run in _visible_runs(paragraph) if run.text.strip()]
     return bool(runs) and all(run.bold is True for run in runs)
 
 
@@ -836,7 +899,7 @@ def _safe_hex_color(value) -> str:
 
 
 def _table_cell_format(cell: _Cell) -> tuple[bool, bool, bool, str, str, str]:
-    runs = [run for paragraph in cell.paragraphs for run in paragraph.runs if run.text.strip()]
+    runs = [run for paragraph in cell.paragraphs for run in _visible_runs(paragraph) if run.text.strip()]
     bold = bool(runs) and all(run.bold is True for run in runs)
     italic = bool(runs) and all(run.italic is True for run in runs)
     underline = bool(runs) and all(run.underline is True for run in runs)
@@ -1164,6 +1227,15 @@ def _route_titles_by_language(first: str, second: str) -> tuple[str, str]:
 def extract_form_data_from_docx(file_bytes: bytes) -> tuple[dict, list[dict]]:
     """Extract a reviewable form payload and body images from a DOCX file."""
     document = Document(io.BytesIO(file_bytes))
+    hidden_text = _HiddenTextContext(document)
+    token = _HIDDEN_TEXT_CONTEXT.set(hidden_text)
+    try:
+        return _extract_form_data(document, hidden_text)
+    finally:
+        _HIDDEN_TEXT_CONTEXT.reset(token)
+
+
+def _extract_form_data(document: Document, hidden_text: _HiddenTextContext) -> tuple[dict, list[dict]]:
     report = _ImportReport()
     blocks, images = _docx_blocks(document)
     paragraph_indices = [index for index, block in enumerate(blocks) if block['kind'] == 'paragraph']
@@ -1492,6 +1564,8 @@ def extract_form_data_from_docx(file_bytes: bytes) -> tuple[dict, list[dict]]:
         'figures': figure_number,
         'references': len(references),
     }
+    if hidden_text.total():
+        report.add('hidden_text', hidden_text.total())
     # Empty unless an import phase counted changed or unconvertible content.
     result['warnings'].extend(report.warnings())
     result['stats'].update(report.stats())
