@@ -234,6 +234,122 @@ _HIDDEN_TEXT_CONTAINERS = {
 }
 
 
+class _ImportReport:
+    """Count scientific content that Word import changed or could not convert.
+
+    Only non-zero counts produce warnings or stats, so a manuscript without
+    such content imports exactly as before. Each import phase registers its
+    own message template here before it starts counting.
+    """
+    MESSAGES: dict[str, str] = {}
+
+    def __init__(self, messages: dict[str, str] | None = None):
+        self.messages = dict(self.MESSAGES if messages is None else messages)
+        self.counts: dict[str, int] = {}
+
+    def add(self, key: str, amount: int = 1) -> None:
+        if key not in self.messages:
+            raise KeyError(f'Unknown import report key: {key}')
+        self.counts[key] = self.counts.get(key, 0) + amount
+
+    def warnings(self) -> list[str]:
+        return [template.format(count=self.counts[key])
+                for key, template in self.messages.items() if self.counts.get(key, 0) > 0]
+
+    def stats(self) -> dict[str, int]:
+        return {key: count for key, count in self.counts.items() if count > 0}
+
+
+_ON_OFF_FALSE = {'0', 'false', 'off'}
+
+
+def _on_off(element) -> bool | None:
+    """Value of an OOXML on/off property element; None when it is absent."""
+    if element is None:
+        return None
+    value = element.get(qn('w:val'))
+    return value is None or value.strip().lower() not in _ON_OFF_FALSE
+
+
+class _RunPropertyResolver:
+    """Effective on/off run properties (b, i, vanish, …) including styles.
+
+    Direct run formatting is absolute. Otherwise the document default is the
+    base value, and a paragraph style and a character style that switch the
+    property on each toggle it (ECMA-376 §17.7.3 toggle properties), so bold
+    text in a bold paragraph style shows as regular. Inside one style's
+    ``basedOn`` chain the nearest definition wins. Table styles and
+    conditional formatting are not considered.
+    """
+
+    _MAX_STYLE_DEPTH = 32
+
+    def __init__(self, document: Document):
+        try:
+            styles_element = document.styles.element
+        except Exception:  # a damaged or missing styles part must not stop import
+            styles_element = None
+        self._styles: dict[str, object] = {}
+        self._default_paragraph_style = None
+        self._defaults = None
+        self._cache: dict[tuple[str, str], bool | None] = {}
+        if styles_element is None:
+            return
+        for style in styles_element.findall(qn('w:style')):
+            style_id = style.get(qn('w:styleId'))
+            if not style_id:
+                continue
+            self._styles[style_id] = style
+            if (style.get(qn('w:type')) == 'paragraph'
+                    and _on_off_attribute(style.get(qn('w:default')))):
+                self._default_paragraph_style = style_id
+        self._defaults = styles_element.find(
+            qn('w:docDefaults') + '/' + qn('w:rPrDefault') + '/' + qn('w:rPr'))
+
+    def _style_value(self, style_id: str | None, name: str, style_type: str) -> bool | None:
+        if not style_id:
+            return None
+        key = (style_type + ':' + style_id, name)
+        if key in self._cache:
+            return self._cache[key]
+        value, seen, current = None, set(), style_id
+        while current and current not in seen and len(seen) < self._MAX_STYLE_DEPTH:
+            seen.add(current)
+            style = self._styles.get(current)
+            if style is None or style.get(qn('w:type'), 'paragraph') != style_type:
+                break
+            r_pr = style.find(qn('w:rPr'))
+            value = _on_off(r_pr.find(qn('w:' + name))) if r_pr is not None else None
+            if value is not None:
+                break
+            based_on = style.find(qn('w:basedOn'))
+            current = based_on.get(qn('w:val')) if based_on is not None else None
+        self._cache[key] = value
+        return value
+
+    def is_on(self, run_element, paragraph_element, name: str) -> bool:
+        r_pr = run_element.find(qn('w:rPr'))
+        if r_pr is not None:
+            direct = _on_off(r_pr.find(qn('w:' + name)))
+            if direct is not None:
+                return direct
+        value = bool(_on_off(self._defaults.find(qn('w:' + name)))) if self._defaults is not None else False
+        p_style = paragraph_element.find(qn('w:pPr') + '/' + qn('w:pStyle')) if paragraph_element is not None else None
+        paragraph_style_id = p_style.get(qn('w:val')) if p_style is not None else self._default_paragraph_style
+        r_style = r_pr.find(qn('w:rStyle')) if r_pr is not None else None
+        for style_value in (
+            self._style_value(paragraph_style_id, name, 'paragraph'),
+            self._style_value(r_style.get(qn('w:val')) if r_style is not None else None, name, 'character'),
+        ):
+            if style_value:
+                value = not value
+        return value
+
+
+def _on_off_attribute(value: str | None) -> bool:
+    return value is not None and value.strip().lower() not in _ON_OFF_FALSE
+
+
 def _paragraph_text(paragraph) -> str:
     """Visible paragraph text, including citation fields and content controls.
 
@@ -1048,6 +1164,7 @@ def _route_titles_by_language(first: str, second: str) -> tuple[str, str]:
 def extract_form_data_from_docx(file_bytes: bytes) -> tuple[dict, list[dict]]:
     """Extract a reviewable form payload and body images from a DOCX file."""
     document = Document(io.BytesIO(file_bytes))
+    report = _ImportReport()
     blocks, images = _docx_blocks(document)
     paragraph_indices = [index for index, block in enumerate(blocks) if block['kind'] == 'paragraph']
 
@@ -1375,6 +1492,9 @@ def extract_form_data_from_docx(file_bytes: bytes) -> tuple[dict, list[dict]]:
         'figures': figure_number,
         'references': len(references),
     }
+    # Empty unless an import phase counted changed or unconvertible content.
+    result['warnings'].extend(report.warnings())
+    result['stats'].update(report.stats())
     return result, images
 
 
