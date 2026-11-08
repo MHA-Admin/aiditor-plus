@@ -1,0 +1,289 @@
+% ============================================================
+%  Sample Science Journal
+%  Bu dosya Journal LaTeX Formatter tarafından oluşturulmuştur.
+%  Overleaf: New Project → Upload Project → bu ZIP'i seçin.
+%  Derleyici: XeLaTeX
+% ============================================================
+
+\documentclass[11pt,a4paper,twoside]{article}
+
+\usepackage{fontspec}
+\usepackage{unicode-math}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage[table]{xcolor}
+\usepackage{titlesec}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{adjustbox}
+\usepackage[normalem]{ulem}
+\newlength{\JGTTRtablewidth}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{doi}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{orcidlink}
+\usepackage{marvosym}
+\usepackage{footmisc}
+\usepackage{enumitem}
+\usepackage{etoolbox}
+\usepackage{calc}
+\usepackage{lastpage}
+\usepackage{ifthen}
+
+% ── Font ──
+\setmainfont{texgyretermes-regular.otf}[BoldFont=texgyretermes-bold.otf,ItalicFont=texgyretermes-italic.otf,BoldItalicFont=texgyretermes-bolditalic.otf]
+\setmathfont{texgyretermes-math.otf}
+
+% ── Colours ──
+\definecolor{JGTTRbrown}{HTML}{222222}
+\definecolor{JGTTRblue}{HTML}{0070C0}
+\definecolor{JGTTRgray}{HTML}{CFCDCD}
+\definecolor{JGTTRdarkgray}{HTML}{3B3838}
+
+% ── Hyperlinks ──
+\hypersetup{colorlinks=true,urlcolor=JGTTRblue,linkcolor=black,citecolor=black,pdfencoding=auto,unicode=true}
+% URL'leri bölme — sığmazsa bütün olarak alt satıra geç
+\renewcommand{\UrlBreaks}{}
+\renewcommand{\UrlBigBreaks}{}
+
+% ── Geometry ──
+\geometry{a4paper,includehead=true,includefoot=true,top=1.25cm,bottom=1.4cm,left=2.5cm,right=2.5cm,headheight=0.709cm,headsep=0.65cm,footskip=1.050cm}
+
+% ── Paragraph format ──
+\setlength{\parindent}{1.25cm}
+\setlength{\parskip}{0pt}
+\renewcommand{\baselinestretch}{1.5}
+
+% ── Satır kırma / Line breaking ──
+% Uzun kelimeler ve URL'lerin sayfa kenarına taşmasını önler
+\setlength{\emergencystretch}{3em}
+\tolerance=800
+\hyphenpenalty=50
+\exhyphenpenalty=50
+
+% ── Section headings ──
+\titleformat{\section}[block]{\fontsize{11}{13}\selectfont\bfseries}{}{0em}{}
+\titlespacing{\section}{0pt}{9pt}{5pt}
+\titleformat*{\section}{\fontsize{11}{13}\selectfont\bfseries}
+\titleformat{\subsection}[block]{\fontsize{11}{13}\selectfont\bfseries}{}{0em}{}
+\titlespacing{\subsection}{0pt}{7pt}{3pt}
+\titleformat{\subsubsection}[block]{\fontsize{11}{13}\selectfont\bfseries\itshape}{}{0em}{}
+\titlespacing{\subsubsection}{0pt}{6pt}{3pt}
+
+% Custom running headers and footers
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[CO]{\parbox[b]{0.87\textwidth}{\renewcommand{\baselinestretch}{1}\fontsize{10}{13}\selectfont \bfseries\itshape \raggedright Örnek \& Smith\strut}\hfill\parbox[b]{0.01\textwidth}{\renewcommand{\baselinestretch}{1}\fontsize{10}{13}\selectfont \bfseries\itshape \centering \strut}\hfill\parbox[b]{0.1\textwidth}{\renewcommand{\baselinestretch}{1}\fontsize{10}{13}\selectfont \bfseries\itshape \raggedleft \thepage{}\strut}}
+\fancyhead[CE]{\parbox[b]{0.87\textwidth}{\renewcommand{\baselinestretch}{1}\fontsize{10}{13}\selectfont \bfseries\itshape \raggedright Örnek Bilim Dergisi 2026 4(2) 89–104\strut}\hfill\parbox[b]{0.01\textwidth}{\renewcommand{\baselinestretch}{1}\fontsize{10}{13}\selectfont \bfseries\itshape \centering \strut}\hfill\parbox[b]{0.1\textwidth}{\renewcommand{\baselinestretch}{1}\fontsize{10}{13}\selectfont \bfseries\itshape \raggedleft \thepage{}\strut}}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyfoot[CO]{}
+\fancyfoot[CE]{}
+\renewcommand{\footrulewidth}{0pt}
+\fancypagestyle{firstpage}{\fancyhf{}
+\fancyhead[C]{\parbox[b]{\textwidth}{\centering \renewcommand{\baselinestretch}{1}\fontsize{10}{13}\selectfont \bfseries\itshape Örnek Bilim Dergisi 2026 4(2)\strut}}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyfoot[C]{}
+\renewcommand{\footrulewidth}{0pt}
+}
+
+% ── Caption format ──
+\captionsetup{font={small,bf},labelsep=period,justification=centering,skip=4pt}
+\captionsetup[table]{position=top}
+
+% ── Footnote format ──
+\renewcommand{\footnoterule}{\kern-3pt\hrule width 2cm height 0.4pt\kern 2.6pt}
+\setlength{\footnotesep}{4pt}
+
+% ── List format ──
+\setlist{leftmargin=1.2cm,itemsep=0pt,parsep=0pt,topsep=2pt,partopsep=0pt}
+
+% ── Bibliography ──
+\bibliographystyle{unsrtnat}
+\setlength{\bibhang}{1.5em}
+\setlength{\bibsep}{3pt}
+
+% ── Article metadata ──
+\newcommand{\JGTTRyear}{2026}
+\newcommand{\JGTTRvolume}{4}
+\newcommand{\JGTTRissue}{2}
+\newcommand{\JGTTRstartpage}{89}
+\newcommand{\JGTTRendpage}{104}
+\newcommand{\JGTTRDOI}{10.1234/example.2026.4}
+\newcommand{\JGTTRarticletype}{Araştırma Makalesi / Research Article}
+\newcommand{\JGTTRarticletypetr}{Araştırma Makalesi}
+\newcommand{\JGTTRarticletypeen}{Research Article}
+\newcommand{\JGTTRreceived}{14.03.2026}
+\newcommand{\JGTTRaccepted}{22.07.2026}
+\newcommand{\JGTTRpublished}{08.09.2026}
+\newcommand{\JGTTRturkishtitle}{Akademik Yayıncılıkta Açık ve Tekrarlanabilir İş Akışları}
+\newcommand{\JGTTRturkishabstract}{Bu çalışma, akademik dergilerde düzenli ve tekrarlanabilir yayın süreçlerinin nasıl kurulabileceğini incelemektedir. Editörlerin kullandığı sayfa düzenleri, kaynak belgelerin yapısı ve makale üst verileri birlikte ele alınmaktadır. Örnek iş akışı, kaynak bilgilerin korunması ve dergi tercihleriyle tutarlı bir çıktı oluşturulması üzerine kurulmuştur. Bulgular, ortak bir biçimlendirme altyapısının dergilere özgü tasarımlar ile birlikte kullanılabileceğini göstermektedir.}
+\newcommand{\JGTTRturkishkeywords}{akademik yayıncılık; dergi editörlüğü; açık bilim}
+\newcommand{\JGTTRenglishtitle}{Open and Reproducible Workflows in Academic Publishing}
+\newcommand{\JGTTRenglishabstract}{This study examines the development of consistent and reproducible workflows for academic journals. Page layouts, source document structure and article metadata are considered together. The example workflow focuses on preserving source information while producing output consistent with journal preferences. The findings illustrate how a shared formatting system can accommodate the distinct visual identity of different publications.}
+\newcommand{\JGTTRenglishkeywords}{academic publishing; journal editing; open science}
+\newcommand{\JGTTRjournalnametr}{Örnek Bilim Dergisi}
+\newcommand{\JGTTRjournalnameen}{Sample Science Journal}
+\newcommand{\JGTTRauthorshort}{Örnek \& Smith}
+\newcommand{\JGTTRheadtitle}{Akademik Yayıncılıkta Açık ve Tekrarlanabilir İş Akışları}
+\newcommand{\JGTTRaffiliations}{\textsuperscript{1}Örnek Üniversitesi, Sosyal Bilimler Bölümü. ORCID: \href{https://orcid.org/0000-0002-1825-0097}{\mbox{0000-0002-1825-0097}}. E-posta: \href{mailto:deniz@example.org}{\mbox{deniz@example.org}}\\
+  \textsuperscript{2}Example University, Department of Information Studies. E-posta: \href{mailto:alex@example.org}{\mbox{alex@example.org}}}
+\newcommand{\JGTTRcorrespondinginfo}{Deniz Örnek, Örnek Üniversitesi, Sosyal Bilimler Bölümü. E-posta: \href{mailto:deniz@example.org}{deniz@example.org}}
+\newcommand{\JGTTRapacitation}{Örnek \& Smith\ (2026). Akademik Yayıncılıkta Açık ve Tekrarlanabilir İş Akışları. \textit{Örnek Bilim Dergisi}, \textit{4}(2), 89--104. \href{https://doi.org/\JGTTRDOI}{https://doi.org/\JGTTRDOI}}
+\newcommand{\JGTTRethicsstatement}{Bu örnek makalede insan katılımcılardan veri toplanmamıştır.}
+
+% ── DOI yardımcı makrosu (doi: önekini tekrar etmeden hyperlink) ──
+\newcommand{\JGTTRdoilink}{\href{https://doi.org/\JGTTRDOI}{\JGTTRDOI}}
+
+% ── Internal helpers ──
+\newcommand{\infolabel}[1]{{\fontsize{9}{11}\selectfont\scshape #1}}
+\newcommand{\infosubheading}[1]{{\fontsize{7.5}{9}\selectfont\bfseries #1}}
+\newcommand{\infovalue}[1]{{\fontsize{7.5}{9}\selectfont #1}}
+\newcommand{\infoboldlabel}[1]{{\fontsize{7.5}{9}\selectfont\bfseries #1}}
+\newcommand{\inforule}{\par\vspace{0pt}\noindent\rule{\linewidth}{0.4pt}\par\vspace{0pt}}
+
+% Template: scholarly; footer: full
+
+\newsavebox{\JGTTRfooterbox}
+\newcommand{\JGTTRfirstpage}[1]{%
+  \begingroup\renewcommand{\baselinestretch}{1}\selectfont
+  \newgeometry{includehead=true,includefoot=true,top=0.3cm,bottom=0.2cm,left=2.5cm,right=2.5cm,headheight=0.709cm,headsep=0.25cm,footskip=1.050cm}%
+  \thispagestyle{firstpage}%
+  \begin{lrbox}{\JGTTRfooterbox}\begin{minipage}{\textwidth}
+  \fontsize{8}{10}\selectfont\setlength{\parindent}{0pt}\setlength{\parskip}{0pt}
+\noindent\rule{\textwidth}{0.4pt}\par Etik Beyan: Bu örnek makalede insan katılımcılardan veri toplanmamıştır.\par
+* Örnek makale: sayfa düzenini göstermek amacıyla hazırlanmıştır.\par
+Bu makale CC BY 4.0 lisansı ile yayımlanmıştır.\par
+Editör / Editor: Dr. Deniz Örnek\par
+\IfFileExists{license_logo.png}{\includegraphics[height=0.5cm,width=0.3\textwidth,keepaspectratio]{license_logo.png}}{\IfFileExists{license_logo.jpg}{\includegraphics[height=0.5cm,width=0.3\textwidth,keepaspectratio]{license_logo.jpg}}{\IfFileExists{license_logo.jpeg}{\includegraphics[height=0.5cm,width=0.3\textwidth,keepaspectratio]{license_logo.jpeg}}{\IfFileExists{license_logo.pdf}{\includegraphics[height=0.5cm,width=0.3\textwidth,keepaspectratio]{license_logo.pdf}}{}}}}
+\textbf{Sorumlu Yazar / Corresponding Author: }\JGTTRcorrespondinginfo\par
+\textbf{Gönderim / Received: }14.03.2026\hfill \textbf{Revizyon / Revised: }01.05.2026\hfill \textbf{Revizyon / Revised: }15.06.2026\hfill \textbf{Kabul / Accepted: }22.07.2026\hfill \textbf{Yayımlanma / Published: }08.09.2026\par\noindent\rule{\textwidth}{0.4pt}\par
+  \end{minipage}\end{lrbox}%
+  \noindent\begin{adjustbox}{max width=\textwidth,max totalheight={\dimexpr\textheight-\ht\JGTTRfooterbox-\dp\JGTTRfooterbox-3mm\relax},center}%
+  \begin{minipage}{\textwidth}\setlength{\parindent}{0pt}\setlength{\parskip}{0pt}
+\noindent\begin{minipage}[c]{0.19\textwidth}\IfFileExists{journal_logo.png}{\includegraphics[height=3.0cm,width=\linewidth,keepaspectratio]{journal_logo.png}}{\IfFileExists{journal_logo.jpg}{\includegraphics[height=3.0cm,width=\linewidth,keepaspectratio]{journal_logo.jpg}}{\IfFileExists{journal_logo.jpeg}{\includegraphics[height=3.0cm,width=\linewidth,keepaspectratio]{journal_logo.jpeg}}{\IfFileExists{journal_logo.pdf}{\includegraphics[height=3.0cm,width=\linewidth,keepaspectratio]{journal_logo.pdf}}{}}}}\end{minipage}\hfill{\setlength{\fboxsep}{7pt}\colorbox{JGTTRgray!30}{\begin{minipage}[c]{\dimexpr0.79\textwidth-14pt\relax}\centering {\fontsize{15}{18}\selectfont\bfseries\itshape Örnek Bilim Dergisi / Sample Science Journal\par}\vspace{7pt}{\fontsize{11}{14}\selectfont\itshape Yıl: 2026\quad Cilt: 4\quad Sayı: 2\par
+Year: 2026\quad Volume: 4\quad Issue: 2\par}\vspace{5pt}{\fontsize{9}{11}\selectfont ISSN: 1234-5678\par e-ISSN: 2345-6789\par \href{https://journal.example.org}{https:/\allowbreak{}/\allowbreak{}journal.\allowbreak{}example.\allowbreak{}org}\par \href{https://doi.org/\JGTTRDOI}{https://doi.org/\JGTTRDOI}\par}\end{minipage}}}\par\vspace{4pt}\noindent\textcolor{JGTTRbrown}{\rule{\textwidth}{2pt}}\par\vspace{14pt}{\fontsize{10}{12}\selectfont \textbf{Makale Türü / Article Type: }\textit{\JGTTRarticletype}\par\textbf{Atıf / Citation: }\JGTTRapacitation\par}\vspace{18pt}{\centering\fontsize{14}{23}\selectfont\bfseries \JGTTRturkishtitle\textsuperscript{*}\par}\vspace{8pt}{\fontsize{11}{14}\selectfont #1\par}\vspace{3pt}{\fontsize{9}{12}\selectfont\itshape\JGTTRaffiliations\par}\vspace{12pt}{\centering\fontsize{10}{12}\selectfont\bfseries Öz\par}\vspace{8pt}{\fontsize{10}{17.25}\selectfont\setlength{\parindent}{1.25cm}\indent\JGTTRturkishabstract\par}\vspace{5pt}{\fontsize{10}{15}\selectfont\hspace*{1.25cm}\textbf{\textit{Anahtar kelimeler: }}\JGTTRturkishkeywords\par}
+  \end{minipage}\end{adjustbox}\par%
+  \vspace*{\fill}\noindent\usebox{\JGTTRfooterbox}%
+  \restoregeometry%
+{\centering\fontsize{14}{23}\selectfont\bfseries\JGTTRenglishtitle\par}\vspace{16pt}{\centering\fontsize{10}{12}\selectfont\bfseries Extended Summary\par}\vspace{8pt}{\fontsize{10}{17.25}\selectfont\setlength{\parindent}{1.25cm}\indent\JGTTRenglishabstract\par}\vspace{5pt}{\fontsize{10}{15}\selectfont\hspace*{1.25cm}\textbf{\textit{Keywords: }}\JGTTRenglishkeywords\par}\clearpage
+\endgroup
+}
+
+
+% ============================================================
+\begin{document}
+\setcounter{page}{89}
+
+\JGTTRfirstpage{%
+  Doç. Dr.~Deniz Örnek\textsuperscript{1,*}\,\orcidlink{0000-0002-1825-0097},
+  Alex Smith\textsuperscript{2}%
+}
+% Cover numbering starts from the issue's first article page.
+
+\section{Giriş / Introduction}
+
+Editoryal çalışmalar, kaynak belgelerin düzenli ve izlenebilir biçimde işlenmesini gerektirir.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.90\linewidth,height=0.56\textheight,keepaspectratio]{fig_fig1}
+  \caption{Örnek şekil / Sample figure}
+  \label{fig1}
+\end{figure}
+
+Bu örnek makale, farklı dergi şablonlarında aynı içeriğin nasıl gösterildiğini sunmaktadır.
+
+\hyperlink{aiditor_ref_1}{Örnek (2026)} ve (\hyperlink{aiditor_ref_2}{Smith, 2024}) çalışmaları H\textsubscript{2}O, CO\textsubscript{2}, 5 m\textsuperscript{2} ve 10⁻\textsuperscript{3} gibi değerleri raporlamıştır. Özel karakterler: \& \% \$ \# \_ \{ \} \textasciitilde{} \textasciicircum{} \textbackslash{} ve Türkçe ÇĞİÖŞÜ çğıöşü; Yunanca α β; p ≤ 0,05.
+
+Ayrıntılar için \href{https://example.org/kaynak\_(ek)}{https:/\allowbreak{}/\allowbreak{}example.\allowbreak{}org/\allowbreak{}kaynak\_\allowbreak{}(ek)} adresine bakınız.
+
+\section{Bulgular / Results}
+
+Tablo 1, örnek editoryal iş akışının aşamalarını göstermektedir.
+
+\begin{table}[H]
+  \centering
+  \caption{Örnek iş akışı / Example workflow}
+  \label{tbl1}
+  \begingroup
+{\fontsize{9}{10.8}\selectfont
+  \setlength{\JGTTRtablewidth}{\linewidth}
+  \setlength{\tabcolsep}{3pt}
+  \renewcommand{\arraystretch}{1.12}
+  \begin{adjustbox}{max width=\linewidth,center}
+  \begin{tabular}{|>{\raggedright\arraybackslash}p{\dimexpr 0.350000\JGTTRtablewidth-4.6900pt+0.0000pt\relax}|>{\raggedright\arraybackslash}p{\dimexpr 0.650000\JGTTRtablewidth-8.7100pt+0.0000pt\relax}|}
+    \hline
+    \textbf{Aşama / Stage} & \textbf{İşlem / Action} \\ \hline
+    1. İçeri aktarma & Word belgesinin bölüm, tablo ve şekillerini koruma \\ \hline
+    2. Dergi biçimi & Ön ayarların makaleye uygulanması \\ \hline
+    3. Son kontrol & PDF ve kaynak dosyanın gözden geçirilmesi \\ \hline
+  \end{tabular}
+  \end{adjustbox}
+}
+  \endgroup
+\end{table}
+
+\subsection{Yöntem / Method}
+
+Alt bölüm metni.
+Tek satır sonu korunur mu?
+
+\begin{table}[htbp]
+  \centering
+  \caption{Eski tablo / Legacy table}
+  \label{tbl2}
+  \begingroup
+{\fontsize{9}{10.8}\selectfont
+  \setlength{\JGTTRtablewidth}{\linewidth}
+  \setlength{\tabcolsep}{3pt}
+  \renewcommand{\arraystretch}{1.12}
+  \begin{adjustbox}{max width=\linewidth,center}
+  \begin{tabular}{>{\raggedright\arraybackslash}p{\dimexpr 0.500000\JGTTRtablewidth-6.1000pt+0.0000pt\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.500000\JGTTRtablewidth-6.1000pt+0.0000pt\relax}}
+    \toprule
+    \textbf{Değişken} & \textbf{Değer} \\
+    \midrule
+    n & 120 \\
+    α & 0,05 \\
+    \bottomrule
+  \end{tabular}
+  \end{adjustbox}
+}
+  \endgroup
+\end{table}
+
+\section*{Teşekkür / Acknowledgements}
+Destekleri için teşekkür ederiz.
+
+\section*{Araştırmacıların Katkı Oranı / Author Contributions}
+Yazarlar eşit katkı sağlamıştır.
+
+\section*{Çıkar Çatışması / Conflict of Interest}
+Çıkar çatışması yoktur.
+
+
+\begingroup\renewcommand{\baselinestretch}{1}\fontsize{10}{17.25}\selectfont
+{\centering\bfseries Kaynaklar\par}\vspace{6pt}
+\begin{list}{}{%
+  \setlength{\leftmargin}{1.5em}%
+  \setlength{\itemindent}{-1.5em}%
+  \setlength{\topsep}{2pt}%
+  \setlength{\itemsep}{3pt}%
+  \setlength{\parsep}{0pt}%
+}
+\item \hypertarget{aiditor_ref_0}{}Çelik, B. (2020). Dergi editörlüğü. Ankara: Örnek.
+\item \hypertarget{aiditor_ref_1}{}Örnek, D. (2026). Akademik yayıncılıkta iş akışları. Örnek Yayınları.
+\item \hypertarget{aiditor_ref_2}{}Smith, A. (2024). Reproducible journals. Example Journal, 3(1), 1–10. \href{https://doi.org/10.1234/ex.2024\_1}{https:/\allowbreak{}/\allowbreak{}doi.\allowbreak{}org/\allowbreak{}10.\allowbreak{}1234/\allowbreak{}ex.\allowbreak{}2024\_\allowbreak{}1}
+\end{list}
+\endgroup
+
+\end{document}
