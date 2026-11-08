@@ -1581,7 +1581,6 @@ word/webSettings.xml
 </w:sectPr>
 </w:body>
 </w:document>
-### word/fontTable.xml sha256=79385fb7f60247507ecaffc292e9ebd52ea0657b8634f629ba6fccc54011d6bb
 ### word/footer1.xml
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
 <w:ftr xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 wp14">
@@ -2088,7 +2087,6 @@ word/webSettings.xml
 </w:r>
 </w:p>
 </w:hdr>
-### word/numbering.xml sha256=70976f19cbcd896e51890859fe6ecb3467a5a7ad0c040160fedc5a1993cb09ce
 ### word/settings.xml
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
 <w:settings xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:sl="http://schemas.openxmlformats.org/schemaLibrary/2006/main" mc:Ignorable="w14">
@@ -2348,9 +2346,6 @@ word/webSettings.xml
 <w:szCs w:val="18"/>
 </w:rPr>
 </w:style>
-### word/stylesWithEffects.xml sha256=463ae0928cf0d84775dbf8cf18d6c3029f6707c81bf590f6d6dd8757a5e93f15
-### word/theme/theme1.xml sha256=e3a8ab7db9ca7afca56f5f2820a56e8b660016c647773555b060b0a02ac76941
-### word/webSettings.xml sha256=349d36de7434d09f86987ff671d8814964a0588c1e630c06e562cda7e75e9f95
 ### core properties
 title=Akademik Yayıncılıkta Açık ve Tekrarlanabilir İş Akışları
 author=Deniz Örnek; Alex Smith

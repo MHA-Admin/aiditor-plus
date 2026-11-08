@@ -4,9 +4,15 @@ The golden files under tests/golden record the exact output of version 2.4.2.
 Any change to them must be intentional and reviewed. To regenerate after an
 approved output change, run:
 
-    AIDITOR_UPDATE_GOLDEN=1 python -m unittest tests.test_regression_golden
+    AIDITOR_UPDATE_GOLDEN=1 python -m unittest discover -s tests -p test_regression_golden.py
 
+(Windows PowerShell: $env:AIDITOR_UPDATE_GOLDEN="1"; python -m unittest discover -s tests -p test_regression_golden.py)
 and review the resulting diff before committing.
+
+Comparison ignores line-ending style and trailing spaces at line ends (Git and
+editors may rewrite both; TeX treats them as insignificant). python-docx's
+unchanged template parts are listed by name only, so a dependency upgrade does
+not fail these tests unless the generated document parts change.
 """
 import base64
 import copy
@@ -48,8 +54,9 @@ JOURNAL = {'journal_name_tr': 'Örnek Bilim Dergisi', 'journal_name_en': 'Sample
 
 
 def _normalize_text(value):
-    # Git may convert line endings on Windows checkouts; content is what matters.
-    return value.replace('\r\n', '\n')
+    # Git may convert line endings on Windows checkouts and strip trailing
+    # spaces (apply.whitespace=fix, editor settings); content is what matters.
+    return '\n'.join(line.rstrip() for line in value.replace('\r\n', '\n').split('\n'))
 
 
 def assert_golden(test, name, actual):
@@ -85,8 +92,9 @@ def docx_snapshot(blob):
 
     Generated parts (body, headers, footers, settings, relationships and the
     styles changed by the exporter) are recorded in full. Unchanged template
-    parts are recorded by digest. Media bytes depend on the installed Pillow
-    encoder, so only their names and the XML that places them are recorded.
+    parts come from python-docx's bundled template and are listed by name only.
+    Media bytes depend on the installed Pillow encoder, so only their names and
+    the XML that places them are recorded.
     """
     from lxml import etree
     lines = []
@@ -113,8 +121,8 @@ def docx_snapshot(blob):
                     style_name = style.find(f'{{{w}}}name')
                     if style_name is not None and style_name.get(f'{{{w}}}val', '').lower() in SNAPSHOT_STYLES:
                         lines.append(_xml_lines(etree.tostring(style)))
-            else:
-                lines.append(f'### {name} sha256={hashlib.sha256(raw).hexdigest()}')
+            # Other word/ parts (fontTable, numbering, theme, webSettings,
+            # stylesWithEffects) are untouched template data: names only.
     core = Document(io.BytesIO(blob)).core_properties
     lines.append('### core properties')
     lines.extend([f'title={core.title}', f'author={core.author}', f'subject={core.subject}'])
