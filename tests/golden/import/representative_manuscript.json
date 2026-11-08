@@ -1,0 +1,189 @@
+{
+  "data": {
+    "abstract": {
+      "en_abs": "This study examines how digital promotion tools affect local development in rural tourism using a qualitative approach and discusses the findings.",
+      "en_kw": "rural tourism; digital promotion; development",
+      "tr_abs": "Bu çalışma kırsal turizmde dijital tanıtım araçlarının yerel kalkınmaya etkisini nitel bir yaklaşımla incelemektedir ve bulgular tartışılmaktadır.",
+      "tr_kw": "kırsal turizm; dijital tanıtım; kalkınma"
+    },
+    "cover": {
+      "article_type": "Araştırma Makalesi / Research Article",
+      "en_title": "Digital Promotion and Local Development in Rural Tourism",
+      "tr_title": "Kırsal Turizmde Dijital Tanıtım ve Yerel Kalkınma"
+    },
+    "extra": {
+      "ack": "Katılımcılara teşekkür ederiz.",
+      "conflict": "Yazarlar çıkar çatışması bildirmemiştir.",
+      "contrib": ""
+    },
+    "figtables": [
+      {
+        "after_para": "Bu bölümde kavramlar tanımlanmaktadır; İngilizce terimler korunur.",
+        "en_cap": "",
+        "number": "1",
+        "placement": "",
+        "section": "Kuramsal Çerçeve",
+        "section_id": "1",
+        "split_table": false,
+        "tbl_fontsize": "",
+        "tbl_model": {
+          "column_widths": [
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333
+          ],
+          "grid_borders": true,
+          "header_rows": 1,
+          "rows": [
+            [
+              {
+                "align": "left",
+                "bgcolor": "",
+                "bold": true,
+                "colspan": 1,
+                "italic": false,
+                "rowspan": 1,
+                "text": "Grup",
+                "textcolor": "",
+                "underline": false
+              },
+              {
+                "align": "left",
+                "bgcolor": "",
+                "bold": true,
+                "colspan": 1,
+                "italic": false,
+                "rowspan": 1,
+                "text": "Ölçüm",
+                "textcolor": "",
+                "underline": false
+              },
+              {
+                "align": "left",
+                "bgcolor": "",
+                "bold": true,
+                "colspan": 1,
+                "italic": false,
+                "rowspan": 1,
+                "text": "Not",
+                "textcolor": "",
+                "underline": false
+              }
+            ],
+            [
+              {
+                "align": "left",
+                "bgcolor": "",
+                "bold": false,
+                "colspan": 1,
+                "italic": false,
+                "rowspan": 2,
+                "text": "A grubu",
+                "textcolor": "",
+                "underline": false
+              },
+              {
+                "align": "left",
+                "bgcolor": "",
+                "bold": false,
+                "colspan": 1,
+                "italic": false,
+                "rowspan": 1,
+                "text": "12,5",
+                "textcolor": "",
+                "underline": false
+              },
+              {
+                "align": "left",
+                "bgcolor": "",
+                "bold": false,
+                "colspan": 1,
+                "italic": false,
+                "rowspan": 1,
+                "text": "ilk",
+                "textcolor": "",
+                "underline": false
+              }
+            ],
+            [
+              {
+                "align": "center",
+                "bgcolor": "",
+                "bold": false,
+                "colspan": 1,
+                "italic": false,
+                "rowspan": 1,
+                "text": "13,1",
+                "textcolor": "",
+                "underline": false
+              },
+              {
+                "align": "left",
+                "bgcolor": "D9E2F3",
+                "bold": false,
+                "colspan": 1,
+                "italic": false,
+                "rowspan": 1,
+                "text": "son",
+                "textcolor": "",
+                "underline": false
+              }
+            ]
+          ]
+        },
+        "tr_cap": "Grupların ölçüm değerleri",
+        "type": "table"
+      },
+      {
+        "after_para": "Tablo verileri yukarıda özetlenmiştir.",
+        "en_cap": "",
+        "filename": "image1.png",
+        "import_image_index": 0,
+        "mimetype": "image/png",
+        "number": "1",
+        "placement": "",
+        "section": "Kuramsal Çerçeve",
+        "section_id": "1",
+        "tr_cap": "Araştırma modeli",
+        "type": "figure"
+      }
+    ],
+    "references": "Kaya, B., & Demir, C. (2021). Çevrim içi görünürlük. Örnek Dergi, 5(1), 20–34.\nSmith, J., Brown, L., & Green, P. (2022). Digital tools. Example Journal, 12(3), 101–118.\nYılmaz, A. (2020). Kırsal kalkınma ve turizm. Örnek Yayınevi. https://doi.org/10.1234/ky.2020",
+    "sections": [
+      {
+        "content": "Zotero alanı (Yılmaz, 2020) ile başlar.\n\nEndNote alanı (Kaya & Demir, 2021) ile sürer.\n\nMendeley denetimi (Smith vd., 2022) ve basit alan (Yılmaz, 2020).\n\nİzlenen değişiklik eklenen metin korunur. Özel karakterler & % $ # _ ~ ^ ve H₂O, m² Unicode olarak yazılmıştır.\n\n• Birinci madde\n\n• İkinci madde",
+        "id": "0",
+        "level": "1",
+        "name": "Giriş"
+      },
+      {
+        "content": "Bu bölümde kavramlar tanımlanmaktadır; İngilizce terimler korunur.\n\nTablo verileri yukarıda özetlenmiştir.",
+        "id": "1",
+        "level": "2",
+        "name": "Kuramsal Çerçeve"
+      },
+      {
+        "content": "Bulgular (Kaya & Demir, 2021) ile uyumludur.",
+        "id": "2",
+        "level": "1",
+        "name": "Bulgular"
+      }
+    ],
+    "stats": {
+      "figures": 1,
+      "references": 3,
+      "sections": 3,
+      "tables": 1
+    },
+    "warnings": [
+      "Yazar, tarih, DOI ve sayı bilgileri Word dosyasından güvenilir biçimde çıkarılamadığı için mevcut alanlar korundu."
+    ]
+  },
+  "images": [
+    {
+      "filename": "image1.png",
+      "mimetype": "image/png",
+      "sha256": "77dd185eeaf15aa35274bfc9d3a9dbe00460eaaca2f7e064ae37a9a4e6edd019"
+    }
+  ]
+}

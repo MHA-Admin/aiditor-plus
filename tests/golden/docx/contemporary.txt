@@ -1,0 +1,2444 @@
+### files
+[Content_Types].xml
+_rels/.rels
+customXml/_rels/item1.xml.rels
+customXml/item1.xml
+customXml/itemProps1.xml
+docProps/app.xml
+docProps/core.xml
+docProps/thumbnail.jpeg
+word/_rels/document.xml.rels
+word/_rels/footer3.xml.rels
+word/document.xml
+word/fontTable.xml
+word/footer1.xml
+word/footer2.xml
+word/footer3.xml
+word/header1.xml
+word/header2.xml
+word/header3.xml
+word/media/image1.png
+word/numbering.xml
+word/settings.xml
+word/styles.xml
+word/stylesWithEffects.xml
+word/theme/theme1.xml
+word/webSettings.xml
+### word/_rels/document.xml.rels
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+<Relationship Id="rId4" Type="http://schemas.microsoft.com/office/2007/relationships/stylesWithEffects" Target="stylesWithEffects.xml"/>
+<Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>
+<Relationship Id="rId6" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings" Target="webSettings.xml"/>
+<Relationship Id="rId7" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable" Target="fontTable.xml"/>
+<Relationship Id="rId8" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/>
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXml/item1.xml"/>
+<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>
+<Relationship Id="rId9" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/header" Target="header1.xml"/>
+<Relationship Id="rId10" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/header" Target="header2.xml"/>
+<Relationship Id="rId11" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/header" Target="header3.xml"/>
+<Relationship Id="rId12" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/>
+<Relationship Id="rId13" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer2.xml"/>
+<Relationship Id="rId14" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer3.xml"/>
+<Relationship Id="rId15" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.png"/>
+<Relationship Id="rId16" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://journal.example.org" TargetMode="External"/>
+<Relationship Id="rId17" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://example.org/kaynak_(ek" TargetMode="External"/>
+<Relationship Id="rId18" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://doi.org/10.1234/ex.2024_1" TargetMode="External"/>
+</Relationships>
+### word/_rels/footer3.xml.rels
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://orcid.org/0000-0002-1825-0097" TargetMode="External"/>
+<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://doi.org/10.1234/example.2026.4" TargetMode="External"/>
+<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.png"/>
+</Relationships>
+### word/document.xml
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 wp14">
+<w:body>
+<w:p>
+<w:pPr>
+<w:keepNext/>
+<w:spacing w:after="0" w:line="20" w:lineRule="exact"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="2"/>
+</w:rPr>
+</w:r>
+</w:p>
+<w:tbl>
+<w:tblPr>
+<w:jc w:val="center"/>
+<w:tblLayout w:type="fixed"/>
+<w:tblLook w:firstColumn="1" w:firstRow="1" w:lastColumn="0" w:lastRow="0" w:noHBand="0" w:noVBand="1" w:val="04A0"/>
+<w:tblW w:w="10205" w:type="dxa"/>
+</w:tblPr>
+<w:tblGrid>
+<w:gridCol w:w="7370"/>
+<w:gridCol w:w="2835"/>
+</w:tblGrid>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:type="dxa" w:w="7370"/>
+<w:vAlign w:val="center"/>
+<w:tcBorders>
+<w:top w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:left w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:bottom w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:right w:val="nil" w:sz="4" w:color="FFFFFF"/>
+</w:tcBorders>
+<w:tcMar>
+<w:top w:w="110" w:type="dxa"/>
+<w:left w:w="110" w:type="dxa"/>
+<w:bottom w:w="110" w:type="dxa"/>
+<w:right w:w="110" w:type="dxa"/>
+</w:tcMar>
+<w:shd w:fill="176B68" w:val="clear"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i w:val="0"/>
+<w:color w:val="FFFFFF"/>
+<w:sz w:val="22"/>
+</w:rPr>
+<w:t>Örnek Bilim Dergisi</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i/>
+<w:color w:val="FFFFFF"/>
+<w:sz w:val="18"/>
+</w:rPr>
+<w:t>Sample Science Journal</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:type="dxa" w:w="2835"/>
+<w:tcBorders>
+<w:top w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:left w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:bottom w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:right w:val="nil" w:sz="4" w:color="FFFFFF"/>
+</w:tcBorders>
+<w:tcMar>
+<w:top w:w="70" w:type="dxa"/>
+<w:left w:w="70" w:type="dxa"/>
+<w:bottom w:w="70" w:type="dxa"/>
+<w:right w:w="70" w:type="dxa"/>
+</w:tcMar>
+<w:vAlign w:val="center"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="right"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+</w:r>
+<w:r>
+<w:drawing>
+<wp:inline xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<wp:extent cx="1224000" cy="612000"/>
+<wp:docPr id="1" name="Picture 1" descr="journal_logo.png"/>
+<wp:cNvGraphicFramePr>
+<a:graphicFrameLocks noChangeAspect="1"/>
+</wp:cNvGraphicFramePr>
+<a:graphic>
+<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:pic>
+<pic:nvPicPr>
+<pic:cNvPr id="0" name="image.png"/>
+<pic:cNvPicPr/>
+</pic:nvPicPr>
+<pic:blipFill>
+<a:blip r:embed="rId15"/>
+<a:stretch>
+<a:fillRect/>
+</a:stretch>
+</pic:blipFill>
+<pic:spPr>
+<a:xfrm>
+<a:off x="0" y="0"/>
+<a:ext cx="1224000" cy="612000"/>
+</a:xfrm>
+<a:prstGeom prst="rect"/>
+</pic:spPr>
+</pic:pic>
+</a:graphicData>
+</a:graphic>
+</wp:inline>
+</w:drawing>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+</w:tbl>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="15"/>
+</w:rPr>
+<w:t>ISSN: 1234-5678  ·  e-ISSN: 2345-6789</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="15"/>
+</w:rPr>
+</w:r>
+<w:hyperlink r:id="rId16">
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:color w:val="245F91"/>
+<w:sz w:val="15"/>
+</w:rPr>
+<w:t>https://journal.example.org</w:t>
+</w:r>
+</w:hyperlink>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="15"/>
+</w:rPr>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="120" w:after="120" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="16"/>
+</w:rPr>
+<w:t>Yıl: 2026  ·  Cilt: 4  ·  Sayı: 2</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="80" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i/>
+<w:sz w:val="16"/>
+</w:rPr>
+<w:t>Araştırma Makalesi / Research Article</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Title"/>
+<w:keepNext/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="80" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i w:val="0"/>
+<w:color w:val="176B68"/>
+<w:sz w:val="26"/>
+</w:rPr>
+<w:t>Akademik Yayıncılıkta Açık ve Tekrarlanabilir İş Akışları *</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Subtitle"/>
+<w:keepNext/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="80" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i/>
+<w:color w:val="176B68"/>
+<w:sz w:val="23"/>
+</w:rPr>
+<w:t>Open and Reproducible Workflows in Academic Publishing</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="120" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i w:val="0"/>
+<w:sz w:val="20"/>
+</w:rPr>
+<w:t>Deniz Örnek</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="14"/>
+<w:vertAlign w:val="superscript"/>
+</w:rPr>
+<w:t>1*</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="20"/>
+</w:rPr>
+<w:t xml:space="preserve">, </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i w:val="0"/>
+<w:sz w:val="20"/>
+</w:rPr>
+<w:t>Alex Smith</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="14"/>
+<w:vertAlign w:val="superscript"/>
+</w:rPr>
+<w:t>2</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="100" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="15"/>
+</w:rPr>
+<w:t>Başvuru / Received: 14.03.2026  ·  Revizyon / Revised: 01.05.2026  ·  Revizyon / Revised: 15.06.2026  ·  Kabul / Accepted: 22.07.2026  ·  Yayın / Published: 08.09.2026  ·  Editör / Editor: Dr. Deniz Örnek</w:t>
+</w:r>
+</w:p>
+<w:tbl>
+<w:tblPr>
+<w:jc w:val="center"/>
+<w:tblLayout w:type="fixed"/>
+<w:tblLook w:firstColumn="1" w:firstRow="1" w:lastColumn="0" w:lastRow="0" w:noHBand="0" w:noVBand="1" w:val="04A0"/>
+<w:tblW w:w="10205" w:type="dxa"/>
+</w:tblPr>
+<w:tblGrid>
+<w:gridCol w:w="5102"/>
+<w:gridCol w:w="5102"/>
+</w:tblGrid>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:type="dxa" w:w="5102"/>
+<w:tcBorders>
+<w:top w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:left w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:bottom w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:right w:val="nil" w:sz="4" w:color="FFFFFF"/>
+</w:tcBorders>
+<w:tcMar>
+<w:top w:w="70" w:type="dxa"/>
+<w:left w:w="70" w:type="dxa"/>
+<w:bottom w:w="70" w:type="dxa"/>
+<w:right w:w="70" w:type="dxa"/>
+</w:tcMar>
+<w:vAlign w:val="center"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:keepNext/>
+<w:widowControl/>
+<w:spacing w:before="60" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i w:val="0"/>
+<w:color w:val="176B68"/>
+<w:sz w:val="18"/>
+</w:rPr>
+<w:t>Özet</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="both"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i/>
+<w:sz w:val="18"/>
+</w:rPr>
+<w:t>Bu çalışma, akademik dergilerde düzenli ve tekrarlanabilir yayın süreçlerinin nasıl kurulabileceğini incelemektedir. Editörlerin kullandığı sayfa düzenleri, kaynak belgelerin yapısı ve makale üst verileri birlikte ele alınmaktadır. Örnek iş akışı, kaynak bilgilerin korunması ve dergi tercihleriyle tutarlı bir çıktı oluşturulması üzerine kurulmuştur. Bulgular, ortak bir biçimlendirme altyapısının dergilere özgü tasarımlar ile birlikte kullanılabileceğini göstermektedir.</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="100" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="15"/>
+</w:rPr>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i w:val="0"/>
+<w:sz w:val="15"/>
+</w:rPr>
+<w:t xml:space="preserve">Anahtar kelimeler: </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="15"/>
+</w:rPr>
+<w:t>akademik yayıncılık; dergi editörlüğü; açık bilim</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:type="dxa" w:w="5102"/>
+<w:tcBorders>
+<w:top w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:left w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:bottom w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:right w:val="nil" w:sz="4" w:color="FFFFFF"/>
+</w:tcBorders>
+<w:tcMar>
+<w:top w:w="70" w:type="dxa"/>
+<w:left w:w="70" w:type="dxa"/>
+<w:bottom w:w="70" w:type="dxa"/>
+<w:right w:w="70" w:type="dxa"/>
+</w:tcMar>
+<w:vAlign w:val="center"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:keepNext/>
+<w:widowControl/>
+<w:spacing w:before="60" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i w:val="0"/>
+<w:color w:val="176B68"/>
+<w:sz w:val="18"/>
+</w:rPr>
+<w:t>Abstract</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="both"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i/>
+<w:sz w:val="18"/>
+</w:rPr>
+<w:t>This study examines the development of consistent and reproducible workflows for academic journals. Page layouts, source document structure and article metadata are considered together. The example workflow focuses on preserving source information while producing output consistent with journal preferences. The findings illustrate how a shared formatting system can accommodate the distinct visual identity of different publications.</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="100" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="15"/>
+</w:rPr>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i w:val="0"/>
+<w:sz w:val="15"/>
+</w:rPr>
+<w:t xml:space="preserve">Keywords: </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="15"/>
+</w:rPr>
+<w:t>academic publishing; journal editing; open science</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+</w:tbl>
+<w:p>
+<w:pPr>
+<w:sectPr>
+<w:headerReference w:type="default" r:id="rId9"/>
+<w:headerReference w:type="even" r:id="rId10"/>
+<w:headerReference w:type="first" r:id="rId11"/>
+<w:footerReference w:type="default" r:id="rId12"/>
+<w:footerReference w:type="even" r:id="rId13"/>
+<w:footerReference w:type="first" r:id="rId14"/>
+<w:pgSz w:w="11906" w:h="16838"/>
+<w:pgMar w:top="1049" w:right="850" w:bottom="3340" w:left="850" w:header="454" w:footer="454" w:gutter="0"/>
+<w:pgNumType w:start="89"/>
+<w:cols w:space="720"/>
+<w:titlePg/>
+<w:docGrid w:linePitch="360"/>
+</w:sectPr>
+</w:pPr>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Heading1"/>
+<w:keepNext/>
+<w:widowControl/>
+<w:spacing w:before="160" w:after="80" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i w:val="0"/>
+</w:rPr>
+<w:t>Giriş / Introduction</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="both"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+<w:t>Editoryal çalışmalar, kaynak belgelerin düzenli ve izlenebilir biçimde işlenmesini gerektirir.</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext/>
+<w:widowControl/>
+<w:spacing w:before="80" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+</w:r>
+<w:r>
+<w:drawing>
+<wp:inline xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<wp:extent cx="5832729" cy="2916364"/>
+<wp:docPr id="2" name="Picture 2" descr="fig_fig1.png"/>
+<wp:cNvGraphicFramePr>
+<a:graphicFrameLocks noChangeAspect="1"/>
+</wp:cNvGraphicFramePr>
+<a:graphic>
+<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:pic>
+<pic:nvPicPr>
+<pic:cNvPr id="0" name="image.png"/>
+<pic:cNvPicPr/>
+</pic:nvPicPr>
+<pic:blipFill>
+<a:blip r:embed="rId15"/>
+<a:stretch>
+<a:fillRect/>
+</a:stretch>
+</pic:blipFill>
+<pic:spPr>
+<a:xfrm>
+<a:off x="0" y="0"/>
+<a:ext cx="5832729" cy="2916364"/>
+</a:xfrm>
+<a:prstGeom prst="rect"/>
+</pic:spPr>
+</pic:pic>
+</a:graphicData>
+</a:graphic>
+</wp:inline>
+</w:drawing>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Caption"/>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="120" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i w:val="0"/>
+<w:sz w:val="18"/>
+</w:rPr>
+<w:t>Şekil 1. Örnek şekil / Sample figure</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="both"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+<w:t>Bu örnek makale, farklı dergi şablonlarında aynı içeriğin nasıl gösterildiğini sunmaktadır.</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="both"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+</w:r>
+<w:hyperlink w:anchor="aiditor_ref_1" w:history="1">
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+<w:t>Örnek (2026)</w:t>
+</w:r>
+</w:hyperlink>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+<w:t xml:space="preserve"> ve (</w:t>
+</w:r>
+<w:hyperlink w:anchor="aiditor_ref_2" w:history="1">
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+<w:t>Smith, 2024</w:t>
+</w:r>
+</w:hyperlink>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+<w:t>) çalışmaları H₂O, CO₂, 5 m² ve 10⁻³ gibi değerleri raporlamıştır. Özel karakterler: &amp; % $ # _ { } ~ ^ \ ve Türkçe ÇĞİÖŞÜ çğıöşü; Yunanca α β; p ≤ 0,05.</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="both"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+<w:t xml:space="preserve">Ayrıntılar için </w:t>
+</w:r>
+<w:hyperlink r:id="rId17">
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:color w:val="245F91"/>
+</w:rPr>
+<w:t>https://example.org/kaynak_(ek</w:t>
+</w:r>
+</w:hyperlink>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+<w:t>) adresine bakınız.</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Heading1"/>
+<w:keepNext/>
+<w:widowControl/>
+<w:spacing w:before="160" w:after="80" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i w:val="0"/>
+</w:rPr>
+<w:t>Bulgular / Results</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="both"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+<w:t>Tablo 1, örnek editoryal iş akışının aşamalarını göstermektedir.</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Caption"/>
+<w:keepNext/>
+<w:widowControl/>
+<w:spacing w:before="80" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i w:val="0"/>
+<w:sz w:val="18"/>
+</w:rPr>
+<w:t>Tablo 1. Örnek iş akışı / Example workflow</w:t>
+</w:r>
+</w:p>
+<w:tbl>
+<w:tblPr>
+<w:jc w:val="center"/>
+<w:tblLayout w:type="fixed"/>
+<w:tblLook w:firstColumn="1" w:firstRow="1" w:lastColumn="0" w:lastRow="0" w:noHBand="0" w:noVBand="1" w:val="04A0"/>
+<w:tblW w:w="10206" w:type="dxa"/>
+</w:tblPr>
+<w:tblGrid>
+<w:gridCol w:w="3572"/>
+<w:gridCol w:w="6634"/>
+</w:tblGrid>
+<w:tr>
+<w:trPr>
+<w:tblHeader w:val="true"/>
+</w:trPr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:type="dxa" w:w="3572"/>
+<w:vAlign w:val="center"/>
+<w:tcBorders>
+<w:top w:val="single" w:sz="4" w:color="B7C3C7"/>
+<w:left w:val="single" w:sz="4" w:color="B7C3C7"/>
+<w:bottom w:val="single" w:sz="4" w:color="B7C3C7"/>
+<w:right w:val="single" w:sz="4" w:color="B7C3C7"/>
+</w:tcBorders>
+<w:tcMar>
+<w:top w:w="70" w:type="dxa"/>
+<w:left w:w="70" w:type="dxa"/>
+<w:bottom w:w="70" w:type="dxa"/>
+<w:right w:w="70" w:type="dxa"/>
+</w:tcMar>
+<w:shd w:fill="E9EEEF" w:val="clear"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:after="40" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r/>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i w:val="0"/>
+<w:sz w:val="18"/>
+</w:rPr>
+<w:t>Aşama / Stage</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:type="dxa" w:w="6634"/>
+<w:vAlign w:val="center"/>
+<w:tcBorders>
+<w:top w:val="single" w:sz="4" w:color="B7C3C7"/>
+<w:left w:val="single" w:sz="4" w:color="B7C3C7"/>
+<w:bottom w:val="single" w:sz="4" w:color="B7C3C7"/>
+<w:right w:val="single" w:sz="4" w:color="B7C3C7"/>
+</w:tcBorders>
+<w:tcMar>
+<w:top w:w="70" w:type="dxa"/>
+<w:left w:w="70" w:type="dxa"/>
+<w:bottom w:w="70" w:type="dxa"/>
+<w:right w:w="70" w:type="dxa"/>
+</w:tcMar>
+<w:shd w:fill="E9EEEF" w:val="clear"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:after="40" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r/>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i w:val="0"/>
+<w:sz w:val="18"/>
+</w:rPr>
+<w:t>İşlem / Action</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:type="dxa" w:w="3572"/>
+<w:vAlign w:val="center"/>
+<w:tcBorders>
+<w:top w:val="single" w:sz="4" w:color="B7C3C7"/>
+<w:left w:val="single" w:sz="4" w:color="B7C3C7"/>
+<w:bottom w:val="single" w:sz="4" w:color="B7C3C7"/>
+<w:right w:val="single" w:sz="4" w:color="B7C3C7"/>
+</w:tcBorders>
+<w:tcMar>
+<w:top w:w="70" w:type="dxa"/>
+<w:left w:w="70" w:type="dxa"/>
+<w:bottom w:w="70" w:type="dxa"/>
+<w:right w:w="70" w:type="dxa"/>
+</w:tcMar>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:after="40" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r/>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="18"/>
+</w:rPr>
+<w:t>1. İçeri aktarma</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:type="dxa" w:w="6634"/>
+<w:vAlign w:val="center"/>
+<w:tcBorders>
+<w:top w:val="single" w:sz="4" w:color="B7C3C7"/>
+<w:left w:val="single" w:sz="4" w:color="B7C3C7"/>
+<w:bottom w:val="single" w:sz="4" w:color="B7C3C7"/>
+<w:right w:val="single" w:sz="4" w:color="B7C3C7"/>
+</w:tcBorders>
+<w:tcMar>
+<w:top w:w="70" w:type="dxa"/>
+<w:left w:w="70" w:type="dxa"/>
+<w:bottom w:w="70" w:type="dxa"/>
+<w:right w:w="70" w:type="dxa"/>
+</w:tcMar>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:after="40" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r/>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="18"/>
+</w:rPr>
+<w:t>Word belgesinin bölüm, tablo ve şekillerini koruma</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:type="dxa" w:w="3572"/>
+<w:vAlign w:val="center"/>
+<w:tcBorders>
+<w:top w:val="single" w:sz="4" w:color="B7C3C7"/>
+<w:left w:val="single" w:sz="4" w:color="B7C3C7"/>
+<w:bottom w:val="single" w:sz="4" w:color="B7C3C7"/>
+<w:right w:val="single" w:sz="4" w:color="B7C3C7"/>
+</w:tcBorders>
+<w:tcMar>
+<w:top w:w="70" w:type="dxa"/>
+<w:left w:w="70" w:type="dxa"/>
+<w:bottom w:w="70" w:type="dxa"/>
+<w:right w:w="70" w:type="dxa"/>
+</w:tcMar>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:after="40" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r/>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="18"/>
+</w:rPr>
+<w:t>2. Dergi biçimi</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:type="dxa" w:w="6634"/>
+<w:vAlign w:val="center"/>
+<w:tcBorders>
+<w:top w:val="single" w:sz="4" w:color="B7C3C7"/>
+<w:left w:val="single" w:sz="4" w:color="B7C3C7"/>
+<w:bottom w:val="single" w:sz="4" w:color="B7C3C7"/>
+<w:right w:val="single" w:sz="4" w:color="B7C3C7"/>
+</w:tcBorders>
+<w:tcMar>
+<w:top w:w="70" w:type="dxa"/>
+<w:left w:w="70" w:type="dxa"/>
+<w:bottom w:w="70" w:type="dxa"/>
+<w:right w:w="70" w:type="dxa"/>
+</w:tcMar>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:after="40" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r/>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="18"/>
+</w:rPr>
+<w:t>Ön ayarların makaleye uygulanması</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:type="dxa" w:w="3572"/>
+<w:vAlign w:val="center"/>
+<w:tcBorders>
+<w:top w:val="single" w:sz="4" w:color="B7C3C7"/>
+<w:left w:val="single" w:sz="4" w:color="B7C3C7"/>
+<w:bottom w:val="single" w:sz="4" w:color="B7C3C7"/>
+<w:right w:val="single" w:sz="4" w:color="B7C3C7"/>
+</w:tcBorders>
+<w:tcMar>
+<w:top w:w="70" w:type="dxa"/>
+<w:left w:w="70" w:type="dxa"/>
+<w:bottom w:w="70" w:type="dxa"/>
+<w:right w:w="70" w:type="dxa"/>
+</w:tcMar>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:after="40" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r/>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="18"/>
+</w:rPr>
+<w:t>3. Son kontrol</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:type="dxa" w:w="6634"/>
+<w:vAlign w:val="center"/>
+<w:tcBorders>
+<w:top w:val="single" w:sz="4" w:color="B7C3C7"/>
+<w:left w:val="single" w:sz="4" w:color="B7C3C7"/>
+<w:bottom w:val="single" w:sz="4" w:color="B7C3C7"/>
+<w:right w:val="single" w:sz="4" w:color="B7C3C7"/>
+</w:tcBorders>
+<w:tcMar>
+<w:top w:w="70" w:type="dxa"/>
+<w:left w:w="70" w:type="dxa"/>
+<w:bottom w:w="70" w:type="dxa"/>
+<w:right w:w="70" w:type="dxa"/>
+</w:tcMar>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:after="40" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r/>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="18"/>
+</w:rPr>
+<w:t>PDF ve kaynak dosyanın gözden geçirilmesi</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+</w:tbl>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="4"/>
+</w:rPr>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Heading2"/>
+<w:keepNext/>
+<w:widowControl/>
+<w:spacing w:before="160" w:after="80" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i w:val="0"/>
+</w:rPr>
+<w:t>Yöntem / Method</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="both"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+<w:t>Alt bölüm metni.</w:t>
+<w:br/>
+<w:t>Tek satır sonu korunur mu?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Caption"/>
+<w:keepNext/>
+<w:widowControl/>
+<w:spacing w:before="80" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i w:val="0"/>
+<w:sz w:val="18"/>
+</w:rPr>
+<w:t>Tablo 2. Eski tablo / Legacy table</w:t>
+</w:r>
+</w:p>
+<w:tbl>
+<w:tblPr>
+<w:jc w:val="center"/>
+<w:tblLayout w:type="fixed"/>
+<w:tblLook w:firstColumn="1" w:firstRow="1" w:lastColumn="0" w:lastRow="0" w:noHBand="0" w:noVBand="1" w:val="04A0"/>
+<w:tblW w:w="10206" w:type="dxa"/>
+</w:tblPr>
+<w:tblGrid>
+<w:gridCol w:w="5103"/>
+<w:gridCol w:w="5103"/>
+</w:tblGrid>
+<w:tr>
+<w:trPr>
+<w:tblHeader w:val="true"/>
+</w:trPr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:type="dxa" w:w="5103"/>
+<w:vAlign w:val="center"/>
+<w:tcBorders>
+<w:top w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:left w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:bottom w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:right w:val="nil" w:sz="4" w:color="FFFFFF"/>
+</w:tcBorders>
+<w:tcMar>
+<w:top w:w="70" w:type="dxa"/>
+<w:left w:w="70" w:type="dxa"/>
+<w:bottom w:w="70" w:type="dxa"/>
+<w:right w:w="70" w:type="dxa"/>
+</w:tcMar>
+<w:shd w:fill="E9EEEF" w:val="clear"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:after="40" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r/>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i w:val="0"/>
+<w:sz w:val="18"/>
+</w:rPr>
+<w:t>Değişken</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:type="dxa" w:w="5103"/>
+<w:vAlign w:val="center"/>
+<w:tcBorders>
+<w:top w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:left w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:bottom w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:right w:val="nil" w:sz="4" w:color="FFFFFF"/>
+</w:tcBorders>
+<w:tcMar>
+<w:top w:w="70" w:type="dxa"/>
+<w:left w:w="70" w:type="dxa"/>
+<w:bottom w:w="70" w:type="dxa"/>
+<w:right w:w="70" w:type="dxa"/>
+</w:tcMar>
+<w:shd w:fill="E9EEEF" w:val="clear"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:after="40" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r/>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i w:val="0"/>
+<w:sz w:val="18"/>
+</w:rPr>
+<w:t>Değer</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:type="dxa" w:w="5103"/>
+<w:vAlign w:val="center"/>
+<w:tcBorders>
+<w:top w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:left w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:bottom w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:right w:val="nil" w:sz="4" w:color="FFFFFF"/>
+</w:tcBorders>
+<w:tcMar>
+<w:top w:w="70" w:type="dxa"/>
+<w:left w:w="70" w:type="dxa"/>
+<w:bottom w:w="70" w:type="dxa"/>
+<w:right w:w="70" w:type="dxa"/>
+</w:tcMar>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:after="40" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r/>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="18"/>
+</w:rPr>
+<w:t>n</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:type="dxa" w:w="5103"/>
+<w:vAlign w:val="center"/>
+<w:tcBorders>
+<w:top w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:left w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:bottom w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:right w:val="nil" w:sz="4" w:color="FFFFFF"/>
+</w:tcBorders>
+<w:tcMar>
+<w:top w:w="70" w:type="dxa"/>
+<w:left w:w="70" w:type="dxa"/>
+<w:bottom w:w="70" w:type="dxa"/>
+<w:right w:w="70" w:type="dxa"/>
+</w:tcMar>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:after="40" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r/>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="18"/>
+</w:rPr>
+<w:t>120</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:type="dxa" w:w="5103"/>
+<w:vAlign w:val="center"/>
+<w:tcBorders>
+<w:top w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:left w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:bottom w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:right w:val="nil" w:sz="4" w:color="FFFFFF"/>
+</w:tcBorders>
+<w:tcMar>
+<w:top w:w="70" w:type="dxa"/>
+<w:left w:w="70" w:type="dxa"/>
+<w:bottom w:w="70" w:type="dxa"/>
+<w:right w:w="70" w:type="dxa"/>
+</w:tcMar>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:after="40" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r/>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="18"/>
+</w:rPr>
+<w:t>α</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:type="dxa" w:w="5103"/>
+<w:vAlign w:val="center"/>
+<w:tcBorders>
+<w:top w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:left w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:bottom w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:right w:val="nil" w:sz="4" w:color="FFFFFF"/>
+</w:tcBorders>
+<w:tcMar>
+<w:top w:w="70" w:type="dxa"/>
+<w:left w:w="70" w:type="dxa"/>
+<w:bottom w:w="70" w:type="dxa"/>
+<w:right w:w="70" w:type="dxa"/>
+</w:tcMar>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:after="40" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r/>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="18"/>
+</w:rPr>
+<w:t>0,05</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+</w:tbl>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="4"/>
+</w:rPr>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Heading1"/>
+<w:keepNext/>
+<w:widowControl/>
+<w:spacing w:before="160" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i w:val="0"/>
+</w:rPr>
+<w:t>Teşekkür / Acknowledgements</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="both"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+<w:t>Destekleri için teşekkür ederiz.</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Heading1"/>
+<w:keepNext/>
+<w:widowControl/>
+<w:spacing w:before="160" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i w:val="0"/>
+</w:rPr>
+<w:t>Araştırmacıların Katkı Oranı / Author Contributions</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="both"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+<w:t>Yazarlar eşit katkı sağlamıştır.</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Heading1"/>
+<w:keepNext/>
+<w:widowControl/>
+<w:spacing w:before="160" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i w:val="0"/>
+</w:rPr>
+<w:t>Çıkar Çatışması / Conflict of Interest</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="both"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+<w:t>Çıkar çatışması yoktur.</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Heading1"/>
+<w:keepNext/>
+<w:widowControl/>
+<w:spacing w:before="160" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i w:val="0"/>
+</w:rPr>
+<w:t>Kaynakça / References</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:ind w:left="283" w:hanging="283"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:bookmarkStart w:id="0" w:name="aiditor_ref_0"/>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+<w:t>Çelik, B. (2020). Dergi editörlüğü. Ankara: Örnek.</w:t>
+</w:r>
+<w:bookmarkEnd w:id="0"/>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:ind w:left="283" w:hanging="283"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:bookmarkStart w:id="1" w:name="aiditor_ref_1"/>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+<w:t>Örnek, D. (2026). Akademik yayıncılıkta iş akışları. Örnek Yayınları.</w:t>
+</w:r>
+<w:bookmarkEnd w:id="1"/>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:ind w:left="283" w:hanging="283"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:bookmarkStart w:id="2" w:name="aiditor_ref_2"/>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+<w:t xml:space="preserve">Smith, A. (2024). Reproducible journals. Example Journal, 3(1), 1–10. </w:t>
+</w:r>
+<w:hyperlink r:id="rId18">
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:color w:val="245F91"/>
+</w:rPr>
+<w:t>https://doi.org/10.1234/ex.2024_1</w:t>
+</w:r>
+</w:hyperlink>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+</w:r>
+<w:bookmarkEnd w:id="2"/>
+</w:p>
+<w:sectPr w:rsidR="00FC693F" w:rsidRPr="0006063C" w:rsidSect="00034616">
+<w:pgSz w:w="11906" w:h="16838"/>
+<w:pgMar w:top="1049" w:right="850" w:bottom="1049" w:left="850" w:header="454" w:footer="454" w:gutter="0"/>
+<w:cols w:space="720"/>
+<w:docGrid w:linePitch="360"/>
+</w:sectPr>
+</w:body>
+</w:document>
+### word/footer1.xml
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<w:ftr xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 wp14">
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Footer"/>
+<w:spacing w:after="0" w:before="0" w:line="20" w:lineRule="exact"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="2"/>
+</w:rPr>
+</w:r>
+</w:p>
+<w:tbl>
+<w:tblPr>
+<w:jc w:val="center"/>
+<w:tblLayout w:type="fixed"/>
+<w:tblLook w:firstColumn="1" w:firstRow="1" w:lastColumn="0" w:lastRow="0" w:noHBand="0" w:noVBand="1" w:val="04A0"/>
+<w:tblW w:w="10205" w:type="dxa"/>
+</w:tblPr>
+<w:tblGrid>
+<w:gridCol w:w="10205"/>
+</w:tblGrid>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:type="dxa" w:w="10205"/>
+<w:tcBorders>
+<w:top w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:left w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:bottom w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:right w:val="nil" w:sz="4" w:color="FFFFFF"/>
+</w:tcBorders>
+<w:tcMar>
+<w:top w:w="70" w:type="dxa"/>
+<w:left w:w="70" w:type="dxa"/>
+<w:bottom w:w="70" w:type="dxa"/>
+<w:right w:w="70" w:type="dxa"/>
+</w:tcMar>
+<w:vAlign w:val="center"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:after="0" w:before="0" w:line="264" w:lineRule="auto"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="2"/>
+</w:rPr>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="begin"/>
+</w:r>
+<w:r>
+<w:instrText xml:space="preserve"> PAGE </w:instrText>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="separate"/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="16"/>
+</w:rPr>
+<w:t>89</w:t>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="end"/>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+</w:tbl>
+</w:ftr>
+### word/footer2.xml
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<w:ftr xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 wp14">
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Footer"/>
+<w:spacing w:after="0" w:before="0" w:line="20" w:lineRule="exact"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="2"/>
+</w:rPr>
+</w:r>
+</w:p>
+<w:tbl>
+<w:tblPr>
+<w:jc w:val="center"/>
+<w:tblLayout w:type="fixed"/>
+<w:tblLook w:firstColumn="1" w:firstRow="1" w:lastColumn="0" w:lastRow="0" w:noHBand="0" w:noVBand="1" w:val="04A0"/>
+<w:tblW w:w="10205" w:type="dxa"/>
+</w:tblPr>
+<w:tblGrid>
+<w:gridCol w:w="10205"/>
+</w:tblGrid>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:type="dxa" w:w="10205"/>
+<w:tcBorders>
+<w:top w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:left w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:bottom w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:right w:val="nil" w:sz="4" w:color="FFFFFF"/>
+</w:tcBorders>
+<w:tcMar>
+<w:top w:w="70" w:type="dxa"/>
+<w:left w:w="70" w:type="dxa"/>
+<w:bottom w:w="70" w:type="dxa"/>
+<w:right w:w="70" w:type="dxa"/>
+</w:tcMar>
+<w:vAlign w:val="center"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:after="0" w:before="0" w:line="264" w:lineRule="auto"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="2"/>
+</w:rPr>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="begin"/>
+</w:r>
+<w:r>
+<w:instrText xml:space="preserve"> PAGE </w:instrText>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="separate"/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="16"/>
+</w:rPr>
+<w:t>89</w:t>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="end"/>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+</w:tbl>
+</w:ftr>
+### word/footer3.xml
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<w:ftr xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 wp14">
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="40" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+<w:pBdr>
+<w:top w:val="single" w:sz="4" w:color="176B68"/>
+</w:pBdr>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="14"/>
+</w:rPr>
+<w:t xml:space="preserve">1 Deniz Örnek: Doç. Dr. · Örnek Üniversitesi, Sosyal Bilimler Bölümü · deniz@example.org · </w:t>
+</w:r>
+<w:hyperlink r:id="rId1">
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:color w:val="245F91"/>
+<w:sz w:val="14"/>
+</w:rPr>
+<w:t>https://orcid.org/0000-0002-1825-0097</w:t>
+</w:r>
+</w:hyperlink>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="14"/>
+</w:rPr>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="40" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="14"/>
+</w:rPr>
+<w:t>2 Alex Smith: Example University, Department of Information Studies · alex@example.org</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i/>
+<w:sz w:val="14"/>
+</w:rPr>
+<w:t>* Sorumlu yazar / Corresponding author: Deniz Örnek · deniz@example.org</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="14"/>
+</w:rPr>
+<w:t xml:space="preserve">Önerilen Atıf / Suggested Citation: Örnek &amp; Smith (2026). Akademik Yayıncılıkta Açık ve Tekrarlanabilir İş Akışları. Örnek Bilim Dergisi 4(2), 89–104. </w:t>
+</w:r>
+<w:hyperlink r:id="rId2">
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:color w:val="245F91"/>
+<w:sz w:val="14"/>
+</w:rPr>
+<w:t>https://doi.org/10.1234/example.2026.4</w:t>
+</w:r>
+</w:hyperlink>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="14"/>
+</w:rPr>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="14"/>
+</w:rPr>
+<w:t>Etik Beyan / Ethics Statement: Bu örnek makalede insan katılımcılardan veri toplanmamıştır.</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="14"/>
+</w:rPr>
+<w:t>* Örnek makale: sayfa düzenini göstermek amacıyla hazırlanmıştır.</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="14"/>
+</w:rPr>
+<w:t>Bu makale CC BY 4.0 lisansı ile yayımlanmıştır.</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="60" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="14"/>
+</w:rPr>
+<w:t xml:space="preserve">DOI: </w:t>
+</w:r>
+<w:hyperlink r:id="rId2">
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:color w:val="245F91"/>
+<w:sz w:val="14"/>
+</w:rPr>
+<w:t>https://doi.org/10.1234/example.2026.4</w:t>
+</w:r>
+</w:hyperlink>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="14"/>
+</w:rPr>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:keepNext w:val="0"/>
+<w:widowControl/>
+<w:spacing w:before="0" w:after="40" w:line="259" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+</w:rPr>
+</w:r>
+<w:r>
+<w:drawing>
+<wp:inline xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<wp:extent cx="396000" cy="198000"/>
+<wp:docPr id="1" name="Picture 1" descr="journal_license.png"/>
+<wp:cNvGraphicFramePr>
+<a:graphicFrameLocks noChangeAspect="1"/>
+</wp:cNvGraphicFramePr>
+<a:graphic>
+<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:pic>
+<pic:nvPicPr>
+<pic:cNvPr id="0" name="image.png"/>
+<pic:cNvPicPr/>
+</pic:nvPicPr>
+<pic:blipFill>
+<a:blip r:embed="rId3"/>
+<a:stretch>
+<a:fillRect/>
+</a:stretch>
+</pic:blipFill>
+<pic:spPr>
+<a:xfrm>
+<a:off x="0" y="0"/>
+<a:ext cx="396000" cy="198000"/>
+</a:xfrm>
+<a:prstGeom prst="rect"/>
+</pic:spPr>
+</pic:pic>
+</a:graphicData>
+</a:graphic>
+</wp:inline>
+</w:drawing>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Footer"/>
+<w:spacing w:after="0" w:before="0" w:line="20" w:lineRule="exact"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="2"/>
+</w:rPr>
+</w:r>
+</w:p>
+</w:ftr>
+### word/header1.xml
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<w:hdr xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 wp14">
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Header"/>
+<w:spacing w:after="0" w:before="0" w:line="20" w:lineRule="exact"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="2"/>
+</w:rPr>
+</w:r>
+</w:p>
+<w:tbl>
+<w:tblPr>
+<w:jc w:val="center"/>
+<w:tblLayout w:type="fixed"/>
+<w:tblLook w:firstColumn="1" w:firstRow="1" w:lastColumn="0" w:lastRow="0" w:noHBand="0" w:noVBand="1" w:val="04A0"/>
+<w:tblW w:w="10205" w:type="dxa"/>
+</w:tblPr>
+<w:tblGrid>
+<w:gridCol w:w="10205"/>
+</w:tblGrid>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:type="dxa" w:w="10205"/>
+<w:tcBorders>
+<w:top w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:left w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:bottom w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:right w:val="nil" w:sz="4" w:color="FFFFFF"/>
+</w:tcBorders>
+<w:tcMar>
+<w:top w:w="70" w:type="dxa"/>
+<w:left w:w="70" w:type="dxa"/>
+<w:bottom w:w="70" w:type="dxa"/>
+<w:right w:w="70" w:type="dxa"/>
+</w:tcMar>
+<w:vAlign w:val="center"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:after="0" w:before="0" w:line="264" w:lineRule="auto"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="2"/>
+</w:rPr>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="16"/>
+</w:rPr>
+<w:t>Örnek &amp; Smith (2026). Akademik Yayıncılıkta Açık ve Tekrarlanabilir İş Akışları. Örnek Bilim Dergisi 4(2), 89–104.</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+</w:tbl>
+</w:hdr>
+### word/header2.xml
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<w:hdr xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 wp14">
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Header"/>
+<w:spacing w:after="0" w:before="0" w:line="20" w:lineRule="exact"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="2"/>
+</w:rPr>
+</w:r>
+</w:p>
+<w:tbl>
+<w:tblPr>
+<w:jc w:val="center"/>
+<w:tblLayout w:type="fixed"/>
+<w:tblLook w:firstColumn="1" w:firstRow="1" w:lastColumn="0" w:lastRow="0" w:noHBand="0" w:noVBand="1" w:val="04A0"/>
+<w:tblW w:w="10205" w:type="dxa"/>
+</w:tblPr>
+<w:tblGrid>
+<w:gridCol w:w="10205"/>
+</w:tblGrid>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:type="dxa" w:w="10205"/>
+<w:tcBorders>
+<w:top w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:left w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:bottom w:val="nil" w:sz="4" w:color="FFFFFF"/>
+<w:right w:val="nil" w:sz="4" w:color="FFFFFF"/>
+</w:tcBorders>
+<w:tcMar>
+<w:top w:w="70" w:type="dxa"/>
+<w:left w:w="70" w:type="dxa"/>
+<w:bottom w:w="70" w:type="dxa"/>
+<w:right w:w="70" w:type="dxa"/>
+</w:tcMar>
+<w:vAlign w:val="center"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:after="0" w:before="0" w:line="264" w:lineRule="auto"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="2"/>
+</w:rPr>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b w:val="0"/>
+<w:i w:val="0"/>
+<w:sz w:val="16"/>
+</w:rPr>
+<w:t>Örnek &amp; Smith (2026). Akademik Yayıncılıkta Açık ve Tekrarlanabilir İş Akışları. Örnek Bilim Dergisi 4(2), 89–104.</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+</w:tbl>
+</w:hdr>
+### word/header3.xml
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<w:hdr xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 wp14">
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Header"/>
+<w:spacing w:after="0" w:before="0" w:line="20" w:lineRule="exact"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="2"/>
+</w:rPr>
+</w:r>
+</w:p>
+</w:hdr>
+### word/settings.xml
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<w:settings xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:sl="http://schemas.openxmlformats.org/schemaLibrary/2006/main" mc:Ignorable="w14">
+<w:zoom w:val="bestFit"/>
+<w:proofState w:spelling="clean" w:grammar="clean"/>
+<w:defaultTabStop w:val="720"/>
+<w:characterSpacingControl w:val="doNotCompress"/>
+<w:savePreviewPicture/>
+<w:compat>
+<w:useFELayout/>
+<w:compatSetting w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word" w:val="14"/>
+<w:compatSetting w:name="overrideTableStyleFontSizeAndJustification" w:uri="http://schemas.microsoft.com/office/word" w:val="1"/>
+<w:compatSetting w:name="enableOpenTypeFeatures" w:uri="http://schemas.microsoft.com/office/word" w:val="1"/>
+<w:compatSetting w:name="doNotFlipMirrorIndents" w:uri="http://schemas.microsoft.com/office/word" w:val="1"/>
+</w:compat>
+<w:rsids>
+<w:rsidRoot w:val="00B47730"/>
+<w:rsid w:val="00034616"/>
+<w:rsid w:val="0006063C"/>
+<w:rsid w:val="0015074B"/>
+<w:rsid w:val="0029639D"/>
+<w:rsid w:val="00326F90"/>
+<w:rsid w:val="00AA1D8D"/>
+<w:rsid w:val="00B47730"/>
+<w:rsid w:val="00CB0664"/>
+<w:rsid w:val="00FC693F"/>
+</w:rsids>
+<m:mathPr>
+<m:mathFont m:val="Cambria Math"/>
+<m:brkBin m:val="before"/>
+<m:brkBinSub m:val="--"/>
+<m:smallFrac m:val="0"/>
+<m:dispDef/>
+<m:lMargin m:val="0"/>
+<m:rMargin m:val="0"/>
+<m:defJc m:val="centerGroup"/>
+<m:wrapIndent m:val="1440"/>
+<m:intLim m:val="subSup"/>
+<m:naryLim m:val="undOvr"/>
+</m:mathPr>
+<w:themeFontLang w:val="en-US" w:eastAsia="ja-JP"/>
+<w:clrSchemeMapping w:bg1="light1" w:t1="dark1" w:bg2="light2" w:t2="dark2" w:accent1="accent1" w:accent2="accent2" w:accent3="accent3" w:accent4="accent4" w:accent5="accent5" w:accent6="accent6" w:hyperlink="hyperlink" w:followedHyperlink="followedHyperlink"/>
+<w:doNotAutoCompressPictures/>
+<w:shapeDefaults>
+<o:shapedefaults v:ext="edit" spidmax="1027"/>
+<o:shapelayout v:ext="edit">
+<o:idmap v:ext="edit" data="1"/>
+</o:shapelayout>
+</w:shapeDefaults>
+<w:decimalSymbol w:val="."/>
+<w:listSeparator w:val=","/>
+<w14:docId w14:val="24062061"/>
+<w14:defaultImageDpi w14:val="300"/>
+</w:settings>
+### word/styles.xml (edited styles)
+<w:docDefaults xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml">
+<w:rPrDefault>
+<w:rPr>
+<w:rFonts w:asciiTheme="minorHAnsi" w:eastAsiaTheme="minorEastAsia" w:hAnsiTheme="minorHAnsi" w:cstheme="minorBidi"/>
+<w:sz w:val="22"/>
+<w:szCs w:val="22"/>
+<w:lang w:val="en-US" w:eastAsia="en-US" w:bidi="ar-SA"/>
+</w:rPr>
+</w:rPrDefault>
+<w:pPrDefault>
+<w:pPr>
+<w:spacing w:after="200" w:line="276" w:lineRule="auto"/>
+</w:pPr>
+</w:pPrDefault>
+</w:docDefaults>
+<w:style xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" w:type="paragraph" w:default="1" w:styleId="Normal">
+<w:name w:val="Normal"/>
+<w:qFormat/>
+<w:rsid w:val="00FC693F"/>
+<w:pPr>
+<w:spacing w:after="80" w:line="259" w:lineRule="auto"/>
+</w:pPr>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial"/>
+<w:color w:val="000000"/>
+<w:sz w:val="20"/>
+</w:rPr>
+</w:style>
+<w:style xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" w:type="paragraph" w:styleId="Header">
+<w:name w:val="header"/>
+<w:basedOn w:val="Normal"/>
+<w:link w:val="HeaderChar"/>
+<w:uiPriority w:val="99"/>
+<w:unhideWhenUsed/>
+<w:rsid w:val="00E618BF"/>
+<w:pPr>
+<w:tabs>
+<w:tab w:val="center" w:pos="4680"/>
+<w:tab w:val="right" w:pos="9360"/>
+</w:tabs>
+<w:spacing w:after="80" w:line="259" w:lineRule="auto"/>
+</w:pPr>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial"/>
+<w:color w:val="000000"/>
+<w:sz w:val="20"/>
+</w:rPr>
+</w:style>
+<w:style xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" w:type="paragraph" w:styleId="Footer">
+<w:name w:val="footer"/>
+<w:basedOn w:val="Normal"/>
+<w:link w:val="FooterChar"/>
+<w:uiPriority w:val="99"/>
+<w:unhideWhenUsed/>
+<w:rsid w:val="00E618BF"/>
+<w:pPr>
+<w:tabs>
+<w:tab w:val="center" w:pos="4680"/>
+<w:tab w:val="right" w:pos="9360"/>
+</w:tabs>
+<w:spacing w:after="80" w:line="259" w:lineRule="auto"/>
+</w:pPr>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial"/>
+<w:color w:val="000000"/>
+<w:sz w:val="20"/>
+</w:rPr>
+</w:style>
+<w:style xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" w:type="paragraph" w:styleId="Heading1">
+<w:name w:val="heading 1"/>
+<w:basedOn w:val="Normal"/>
+<w:next w:val="Normal"/>
+<w:link w:val="Heading1Char"/>
+<w:uiPriority w:val="9"/>
+<w:qFormat/>
+<w:rsid w:val="00FC693F"/>
+<w:pPr>
+<w:keepNext/>
+<w:keepLines/>
+<w:spacing w:before="160" w:after="80" w:line="259" w:lineRule="auto"/>
+<w:outlineLvl w:val="0"/>
+</w:pPr>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial"/>
+<w:b/>
+<w:bCs/>
+<w:color w:val="000000"/>
+<w:sz w:val="22"/>
+<w:szCs w:val="28"/>
+</w:rPr>
+</w:style>
+<w:style xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" w:type="paragraph" w:styleId="Heading2">
+<w:name w:val="heading 2"/>
+<w:basedOn w:val="Normal"/>
+<w:next w:val="Normal"/>
+<w:link w:val="Heading2Char"/>
+<w:uiPriority w:val="9"/>
+<w:unhideWhenUsed/>
+<w:qFormat/>
+<w:rsid w:val="00FC693F"/>
+<w:pPr>
+<w:keepNext/>
+<w:keepLines/>
+<w:spacing w:before="160" w:after="80" w:line="259" w:lineRule="auto"/>
+<w:outlineLvl w:val="1"/>
+</w:pPr>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial"/>
+<w:b/>
+<w:bCs/>
+<w:color w:val="000000"/>
+<w:sz w:val="22"/>
+<w:szCs w:val="26"/>
+</w:rPr>
+</w:style>
+<w:style xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" w:type="paragraph" w:styleId="Heading3">
+<w:name w:val="heading 3"/>
+<w:basedOn w:val="Normal"/>
+<w:next w:val="Normal"/>
+<w:link w:val="Heading3Char"/>
+<w:uiPriority w:val="9"/>
+<w:unhideWhenUsed/>
+<w:qFormat/>
+<w:rsid w:val="00FC693F"/>
+<w:pPr>
+<w:keepNext/>
+<w:keepLines/>
+<w:spacing w:before="160" w:after="80" w:line="259" w:lineRule="auto"/>
+<w:outlineLvl w:val="2"/>
+</w:pPr>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial"/>
+<w:b/>
+<w:bCs/>
+<w:color w:val="000000"/>
+<w:sz w:val="22"/>
+</w:rPr>
+</w:style>
+<w:style xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" w:type="paragraph" w:styleId="Title">
+<w:name w:val="Title"/>
+<w:basedOn w:val="Normal"/>
+<w:next w:val="Normal"/>
+<w:link w:val="TitleChar"/>
+<w:uiPriority w:val="10"/>
+<w:qFormat/>
+<w:rsid w:val="00FC693F"/>
+<w:pPr>
+<w:spacing w:after="80" w:line="259" w:lineRule="auto"/>
+<w:contextualSpacing/>
+</w:pPr>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial"/>
+<w:color w:val="000000"/>
+<w:spacing w:val="5"/>
+<w:kern w:val="28"/>
+<w:sz w:val="20"/>
+<w:szCs w:val="52"/>
+</w:rPr>
+</w:style>
+<w:style xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" w:type="paragraph" w:styleId="Subtitle">
+<w:name w:val="Subtitle"/>
+<w:basedOn w:val="Normal"/>
+<w:next w:val="Normal"/>
+<w:link w:val="SubtitleChar"/>
+<w:uiPriority w:val="11"/>
+<w:qFormat/>
+<w:rsid w:val="00FC693F"/>
+<w:pPr>
+<w:numPr>
+<w:ilvl w:val="1"/>
+</w:numPr>
+<w:spacing w:after="80" w:line="259" w:lineRule="auto"/>
+</w:pPr>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial"/>
+<w:i/>
+<w:iCs/>
+<w:color w:val="000000"/>
+<w:spacing w:val="15"/>
+<w:sz w:val="20"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+</w:style>
+<w:style xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" w:type="paragraph" w:styleId="Caption">
+<w:name w:val="caption"/>
+<w:basedOn w:val="Normal"/>
+<w:next w:val="Normal"/>
+<w:uiPriority w:val="35"/>
+<w:semiHidden/>
+<w:unhideWhenUsed/>
+<w:qFormat/>
+<w:rsid w:val="00FC693F"/>
+<w:pPr>
+<w:spacing w:line="259" w:lineRule="auto" w:after="80"/>
+</w:pPr>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial"/>
+<w:b/>
+<w:bCs/>
+<w:color w:val="000000"/>
+<w:sz w:val="20"/>
+<w:szCs w:val="18"/>
+</w:rPr>
+</w:style>
+### core properties
+title=Akademik Yayıncılıkta Açık ve Tekrarlanabilir İş Akışları
+author=Deniz Örnek; Alex Smith
+subject=Örnek Bilim Dergisi
