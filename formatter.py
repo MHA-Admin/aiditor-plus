@@ -266,6 +266,12 @@ _ImportReport.MESSAGES['hidden_text'] = (
 )
 
 
+_ImportReport.MESSAGES['unconverted_script'] = (
+    "{count} üst/alt simge parçası Unicode karşılığı olmadığı için düz metin olarak aktarıldı; "
+    "bu yerleri kontrol edin."
+)
+
+
 _ON_OFF_FALSE = {'0', 'false', 'off'}
 
 
@@ -312,9 +318,10 @@ class _RunPropertyResolver:
         self._defaults = styles_element.find(
             qn('w:docDefaults') + '/' + qn('w:rPrDefault') + '/' + qn('w:rPr'))
 
-    def _style_value(self, style_id: str | None, name: str, style_type: str) -> bool | None:
+    def _style_value(self, style_id: str | None, name: str, style_type: str, read=None):
         if not style_id:
             return None
+        read = read or _on_off
         key = (style_type + ':' + style_id, name)
         if key in self._cache:
             return self._cache[key]
@@ -325,7 +332,7 @@ class _RunPropertyResolver:
             if style is None or style.get(qn('w:type'), 'paragraph') != style_type:
                 break
             r_pr = style.find(qn('w:rPr'))
-            value = _on_off(r_pr.find(qn('w:' + name))) if r_pr is not None else None
+            value = read(r_pr.find(qn('w:' + name))) if r_pr is not None else None
             if value is not None:
                 break
             based_on = style.find(qn('w:basedOn'))
@@ -340,8 +347,7 @@ class _RunPropertyResolver:
             if direct is not None:
                 return direct
         value = bool(_on_off(self._defaults.find(qn('w:' + name)))) if self._defaults is not None else False
-        p_style = paragraph_element.find(qn('w:pPr') + '/' + qn('w:pStyle')) if paragraph_element is not None else None
-        paragraph_style_id = p_style.get(qn('w:val')) if p_style is not None else self._default_paragraph_style
+        paragraph_style_id = self._paragraph_style_id(paragraph_element)
         r_style = r_pr.find(qn('w:rStyle')) if r_pr is not None else None
         for style_value in (
             self._style_value(paragraph_style_id, name, 'paragraph'),
@@ -351,25 +357,66 @@ class _RunPropertyResolver:
                 value = not value
         return value
 
+    def _paragraph_style_id(self, paragraph_element) -> str | None:
+        p_style = paragraph_element.find(qn('w:pPr') + '/' + qn('w:pStyle')) if paragraph_element is not None else None
+        return p_style.get(qn('w:val')) if p_style is not None else self._default_paragraph_style
+
+    def value(self, run_element, paragraph_element, name: str) -> str | None:
+        """Effective ``w:val`` of a non-toggle run property such as ``vertAlign``.
+
+        Direct run formatting wins, then the character style, then the
+        paragraph style (each through its ``basedOn`` chain), then the
+        document defaults. None when the property is not set anywhere.
+        """
+        r_pr = run_element.find(qn('w:rPr'))
+        if r_pr is not None:
+            direct = _val_attribute(r_pr.find(qn('w:' + name)))
+            if direct is not None:
+                return direct
+            r_style = r_pr.find(qn('w:rStyle'))
+            if r_style is not None:
+                styled = self._style_value(r_style.get(qn('w:val')), name, 'character', _val_attribute)
+                if styled is not None:
+                    return styled
+        styled = self._style_value(self._paragraph_style_id(paragraph_element), name, 'paragraph', _val_attribute)
+        if styled is not None:
+            return styled
+        if self._defaults is not None:
+            return _val_attribute(self._defaults.find(qn('w:' + name)))
+        return None
+
+
+def _val_attribute(element) -> str | None:
+    """``w:val`` of a value run property element; None when absent."""
+    if element is None:
+        return None
+    value = element.get(qn('w:val'))
+    return value.strip() if value is not None else None
+
 
 def _on_off_attribute(value: str | None) -> bool:
     return value is not None and value.strip().lower() not in _ON_OFF_FALSE
 
 
 class _HiddenTextContext:
-    """Per-import state for hidden text (Phase 1.2).
+    """Per-import state for hidden text (Phase 1.2) and sub/superscript (Phase 1.3).
 
     ``pieces`` maps each paragraph element to its number of hidden text
     pieces, so a paragraph read several times (classification, merged table
-    cells) is counted once.
+    cells) is counted once. ``unconverted_scripts`` does the same for
+    sub/superscript pieces that have no Unicode form and stay plain text.
     """
 
     def __init__(self, document: Document):
         self.resolver = _RunPropertyResolver(document)
         self.pieces: dict[object, int] = {}
+        self.unconverted_scripts: dict[object, int] = {}
 
     def total(self) -> int:
         return sum(self.pieces.values())
+
+    def total_unconverted_scripts(self) -> int:
+        return sum(self.unconverted_scripts.values())
 
 
 _HIDDEN_TEXT_CONTEXT: ContextVar[_HiddenTextContext | None] = ContextVar(
@@ -390,6 +437,44 @@ def _run_is_hidden(run_element, paragraph_element) -> bool:
     return context.resolver.is_on(run_element, paragraph_element, 'vanish')
 
 
+_SCRIPT_DIGITS = '0123456789'
+_SUPERSCRIPT_CHARS = dict(zip(_SCRIPT_DIGITS + '+-−=()ni', '⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁻⁼⁽⁾ⁿⁱ'))
+_SUBSCRIPT_CHARS = dict(zip(_SCRIPT_DIGITS + '+-−=()', '₀₁₂₃₄₅₆₇₈₉₊₋₋₌₍₎'))
+for _table in (_SUPERSCRIPT_CHARS, _SUBSCRIPT_CHARS):
+    _table.update({char: char for char in list(_table.values())})
+_SCRIPT_TABLES = {'superscript': _SUPERSCRIPT_CHARS, 'subscript': _SUBSCRIPT_CHARS}
+# Kept as they are inside a sub/superscript run without a warning: spacing,
+# list punctuation and the usual note markers (author¹,², title*, †).
+_SCRIPT_NEUTRAL = set(' \t\u00a0,;*†‡§¶–')
+
+
+def _run_vertical_alignment(run_element, paragraph_element) -> str | None:
+    """'superscript' or 'subscript' for an effective ``w:vertAlign``, else None.
+
+    ``w:position`` (raised/lowered text) is not sub/superscript and is
+    ignored. Outside a Word import nothing is converted.
+    """
+    context = _HIDDEN_TEXT_CONTEXT.get()
+    if context is None:
+        return None
+    alignment = context.resolver.value(run_element, paragraph_element, 'vertAlign')
+    return alignment if alignment in _SCRIPT_TABLES else None
+
+
+def _script_text(text: str, alignment: str) -> str | None:
+    """Unicode sub/superscript form of ``text``; None when a character has none.
+
+    The whole piece is converted or none of it, so ``2a`` never becomes a
+    misleading ``²a``.
+    """
+    table = _SCRIPT_TABLES[alignment]
+    if not any(char in table for char in text):
+        return None if any(char not in _SCRIPT_NEUTRAL for char in text) else text
+    if any(char not in table and char not in _SCRIPT_NEUTRAL for char in text):
+        return None
+    return ''.join(table.get(char, char) for char in text)
+
+
 def _visible_runs(paragraph: Paragraph) -> list:
     return [run for run in paragraph.runs if not _run_is_hidden(run._r, paragraph._p)]
 
@@ -404,15 +489,20 @@ def _paragraph_text(paragraph) -> str:
 
     During a Word import, runs hidden with ``w:vanish`` (directly or through
     styles) are skipped and counted; a run of consecutive hidden text is one
-    piece.
+    piece. Sub/superscript runs (effective ``w:vertAlign``) become Unicode
+    sub/superscript characters where every character has one (m², 10⁻³,
+    CO₂); other script runs stay plain text and are counted.
     """
     parts = []
     paragraph_element = paragraph._p
     hidden_pieces = 0
     previous_hidden = False
+    unconverted_pieces = 0
+    previous_unconverted = False
+    alignment = None
 
     def walk(node):
-        nonlocal hidden_pieces, previous_hidden
+        nonlocal hidden_pieces, previous_hidden, unconverted_pieces, previous_unconverted, alignment
         for child in node:
             tag = child.tag
             if tag in _HIDDEN_TEXT_CONTAINERS:
@@ -425,10 +515,28 @@ def _paragraph_text(paragraph) -> str:
                         hidden_pieces += 1
                     previous_hidden = True
                 continue
+            if tag == qn('w:r'):
+                alignment = _run_vertical_alignment(child, paragraph_element)
+                try:
+                    walk(child)
+                finally:
+                    alignment = None
+                continue
             if tag == qn('w:t'):
-                if (child.text or '').strip():
+                text = child.text or ''
+                if text.strip():
                     previous_hidden = False
-                parts.append(child.text or '')
+                    if alignment is None:
+                        previous_unconverted = False
+                if alignment is not None and text:
+                    converted = _script_text(text, alignment)
+                    if converted is None:
+                        if not previous_unconverted:
+                            unconverted_pieces += 1
+                        previous_unconverted = True
+                    else:
+                        text = converted
+                parts.append(text)
             elif tag in (qn('w:tab'), qn('w:ptab')):
                 parts.append('\t')
             elif tag in (qn('w:br'), qn('w:cr')):
@@ -443,6 +551,7 @@ def _paragraph_text(paragraph) -> str:
     context = _HIDDEN_TEXT_CONTEXT.get()
     if context is not None:
         context.pieces[paragraph_element] = hidden_pieces
+        context.unconverted_scripts[paragraph_element] = unconverted_pieces
     return ''.join(parts)
 
 
@@ -1566,6 +1675,8 @@ def _extract_form_data(document: Document, hidden_text: _HiddenTextContext) -> t
     }
     if hidden_text.total():
         report.add('hidden_text', hidden_text.total())
+    if hidden_text.total_unconverted_scripts():
+        report.add('unconverted_script', hidden_text.total_unconverted_scripts())
     # Empty unless an import phase counted changed or unconvertible content.
     result['warnings'].extend(report.warnings())
     result['stats'].update(report.stats())
