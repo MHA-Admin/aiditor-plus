@@ -129,10 +129,6 @@ class ScientificImportChecks(unittest.TestCase):
 class KnownScientificImportGaps(ScientificImportChecks):
     """Documented 2.4.2 losses (teknik analiz Ç3). These must start failing once fixed."""
 
-    def test_gap_hidden_text_is_imported(self):
-        with self.assertRaises(AssertionError):
-            self.check_hidden_text_is_not_imported()
-
     def test_gap_superscript_and_subscript_formatting_is_lost(self):
         with self.assertRaises(AssertionError):
             self.check_superscript_and_subscript_are_preserved()
@@ -151,6 +147,9 @@ class ClosedScientificImportGaps(ScientificImportChecks):
 
     def test_superscript_marker_after_year_keeps_citation_link(self):  # Phase 1.1
         self.check_superscript_marker_after_year_keeps_citation_link()
+
+    def test_hidden_text_is_not_imported(self):  # Phase 1.2
+        self.check_hidden_text_is_not_imported()
 
 
 class CitationEndTests(unittest.TestCase):
