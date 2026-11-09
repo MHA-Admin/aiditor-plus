@@ -496,7 +496,7 @@ def _visible_runs(paragraph: Paragraph) -> list:
     return [run for run in paragraph.runs if not _run_is_hidden(run._r, paragraph._p)]
 
 
-def _paragraph_text(paragraph) -> str:
+def _paragraph_text(paragraph, pieces: list | None = None) -> str:
     """Visible paragraph text, including citation fields and content controls.
 
     Reference managers wrap in-text citations in Word fields (Zotero, EndNote:
@@ -509,8 +509,14 @@ def _paragraph_text(paragraph) -> str:
     piece. Sub/superscript runs (effective ``w:vertAlign``) become Unicode
     sub/superscript characters where every character has one (m², 10⁻³,
     CO₂); other script runs stay plain text and are counted.
+
+    When ``pieces`` is a list, each appended text piece is also recorded as
+    ``(text, run_element)`` (``run_element`` is None outside a run), so the
+    inline formatting of exactly the returned text can be read (Phase 1.4a).
+    The returned text is the same with or without ``pieces``.
     """
     parts = []
+    current_run = None
     paragraph_element = paragraph._p
     hidden_pieces = 0
     previous_hidden = False
@@ -518,8 +524,13 @@ def _paragraph_text(paragraph) -> str:
     previous_unconverted = False
     alignment = None
 
+    def emit(text):
+        parts.append(text)
+        if pieces is not None:
+            pieces.append((text, current_run))
+
     def walk(node):
-        nonlocal hidden_pieces, previous_hidden, unconverted_pieces, previous_unconverted, alignment
+        nonlocal hidden_pieces, previous_hidden, unconverted_pieces, previous_unconverted, alignment, current_run
         for child in node:
             tag = child.tag
             if tag in _HIDDEN_TEXT_CONTAINERS:
@@ -534,10 +545,12 @@ def _paragraph_text(paragraph) -> str:
                 continue
             if tag == qn('w:r'):
                 alignment = _run_vertical_alignment(child, paragraph_element)
+                previous_run, current_run = current_run, child
                 try:
                     walk(child)
                 finally:
                     alignment = None
+                    current_run = previous_run
                 continue
             if tag == qn('w:t'):
                 text = child.text or ''
@@ -553,14 +566,14 @@ def _paragraph_text(paragraph) -> str:
                         previous_unconverted = True
                     else:
                         text = converted
-                parts.append(text)
+                emit(text)
             elif tag in (qn('w:tab'), qn('w:ptab')):
-                parts.append('\t')
+                emit('\t')
             elif tag in (qn('w:br'), qn('w:cr')):
                 if child.get(qn('w:type')) in (None, 'textWrapping'):
-                    parts.append('\n')
+                    emit('\n')
             elif tag == qn('w:noBreakHyphen'):
-                parts.append('-')
+                emit('-')
             else:
                 walk(child)
 
@@ -574,6 +587,140 @@ def _paragraph_text(paragraph) -> str:
 
 def _para_text(para) -> str:
     return _paragraph_text(para).strip()
+
+
+# ── Inline formatting model (Phase 1.4a) ─────────────────────────────────────
+# ``section['content']`` stays the authoritative plain text. A Word import adds
+# an optional ``section['content_rich']`` = {'version': 1, 'paragraphs': [...]}
+# with one entry per paragraph of ``content`` as the renderers split it
+# (``re.split(r'\n\s*\n', content)``, stripped, empties dropped). Each entry
+# is {'plain': <that paragraph>, 'segments': [{'t': text, 'b'?: True,
+# 'i'?: True}, ...]} and ''.join(t) == plain. Only bold and italic are
+# recorded; sub/superscript stays Unicode in the plain text (Phase 1.3).
+CONTENT_RICH_VERSION = 1
+_CONTENT_PARAGRAPH_SPLIT_RE = re.compile(r'\n\s*\n')
+_PLAIN_FLAGS = (False, False)
+
+
+def _content_paragraphs(content: str) -> list[str]:
+    """``content`` split into paragraphs exactly as the LaTeX and Word renderers do."""
+    return [part for part in (piece.strip() for piece in _CONTENT_PARAGRAPH_SPLIT_RE.split(content.strip())) if part]
+
+
+def _paragraph_inline_flags(paragraph: Paragraph, text: str) -> list[tuple[bool, bool]] | None:
+    """(bold, italic) of each character of ``text`` (the stripped visible text).
+
+    Uses the same text walk as the import (hidden text skipped, citation
+    fields and content controls kept, Unicode sub/superscript) and the
+    effective run properties of ``_RunPropertyResolver``, so styles and
+    toggling follow Word. None outside a Word import or when the walk does not
+    reproduce ``text`` exactly.
+    """
+    context = _HIDDEN_TEXT_CONTEXT.get()
+    if context is None:
+        return None
+    pieces: list = []
+    raw = _paragraph_text(paragraph, pieces)
+    flags: list[tuple[bool, bool]] = []
+    cache: dict = {}
+    paragraph_element = paragraph._p
+    for piece, run_element in pieces:
+        if run_element is None:
+            value = _PLAIN_FLAGS
+        elif run_element in cache:
+            value = cache[run_element]
+        else:
+            value = (context.resolver.is_on(run_element, paragraph_element, 'b'),
+                     context.resolver.is_on(run_element, paragraph_element, 'i'))
+            cache[run_element] = value
+        flags.extend([value] * len(piece))
+    start = len(raw) - len(raw.lstrip())
+    if raw.strip() != text or len(flags) != len(raw):
+        return None
+    return flags[start:start + len(text)]
+
+
+def _smooth_whitespace_flags(text: str, flags: list[tuple[bool, bool]]) -> list[tuple[bool, bool]]:
+    """Whitespace keeps only the formatting shared by its neighbouring characters.
+
+    Word users rarely see whether a space is bold or italic; this keeps
+    ``Homo sapiens`` one italic segment and ``önemli bir`` from carrying a
+    bold space. Leading/trailing whitespace of a part is plain.
+    """
+    result = list(flags)
+    previous = None
+    for index, char in enumerate(text):
+        if not char.isspace():
+            previous = flags[index]
+            continue
+        following = next((flags[j] for j in range(index + 1, len(text)) if not text[j].isspace()), None)
+        if previous is None or following is None:
+            result[index] = _PLAIN_FLAGS
+        else:
+            result[index] = (previous[0] and following[0], previous[1] and following[1])
+    return result
+
+
+def _inline_segments(text: str, flags: list[tuple[bool, bool]]) -> list[dict]:
+    segments: list[dict] = []
+    current = None
+    for char, value in zip(text, flags):
+        if segments and value == current:
+            segments[-1]['t'] += char
+            continue
+        segment = {'t': char}
+        if value[0]:
+            segment['b'] = True
+        if value[1]:
+            segment['i'] = True
+        segments.append(segment)
+        current = value
+    return segments
+
+
+def _rich_paragraph_entries(paragraph: Paragraph | None, text: str, prefix: str = '') -> list[dict]:
+    """``content_rich`` entries for one imported body paragraph.
+
+    ``prefix + text`` is the paragraph as stored in ``content`` (``prefix`` is
+    the list marker added by the import, always plain). A Word paragraph that
+    the renderers would split (blank line inside) yields one entry per part.
+    Entries without bold or italic carry a single plain segment.
+    """
+    full = prefix + text
+    flags = _paragraph_inline_flags(paragraph, text) if paragraph is not None else None
+    if flags is None:
+        flags = [_PLAIN_FLAGS] * len(text)
+    flags = [_PLAIN_FLAGS] * len(prefix) + flags
+    entries = []
+    position = 0
+    for match in list(_CONTENT_PARAGRAPH_SPLIT_RE.finditer(full)) + [None]:
+        end = match.start() if match else len(full)
+        chunk = full[position:end]
+        stripped = chunk.strip()
+        if stripped:
+            offset = position + len(chunk) - len(chunk.lstrip())
+            part_flags = _smooth_whitespace_flags(stripped, flags[offset:offset + len(stripped)])
+            entries.append({'plain': stripped, 'segments': _inline_segments(stripped, part_flags)})
+        if match:
+            position = match.end()
+    return entries
+
+
+def _content_rich(content: str, entries: list[dict]) -> dict | None:
+    """``content_rich`` for a section, or None when it would add nothing.
+
+    Returned only when some paragraph has bold or italic text and the entries
+    line up one-to-one with the renderers' paragraphs of ``content`` and each
+    entry's segments rebuild its plain text exactly; otherwise the section
+    keeps the plain-text-only behaviour.
+    """
+    if not any(len(entry['segments']) > 1 or set(entry['segments'][0]) - {'t'} for entry in entries):
+        return None
+    if [entry['plain'] for entry in entries] != _content_paragraphs(content):
+        return None
+    if any(''.join(segment['t'] for segment in entry['segments']) != entry['plain'] for entry in entries):
+        return None
+    return {'version': CONTENT_RICH_VERSION, 'paragraphs': entries}
 
 
 def _style_ppr_chain(paragraph: Paragraph):
@@ -1488,7 +1635,8 @@ def _extract_form_data(document: Document, hidden_text: _HiddenTextContext) -> t
     figure_number = 0
 
     def create_section(name: str, level: int = 1) -> dict:
-        section = {'id': str(len(result['sections'])), 'name': name, 'level': str(max(1, min(level, 3))), '_paragraphs': []}
+        section = {'id': str(len(result['sections'])), 'name': name, 'level': str(max(1, min(level, 3))),
+                   '_paragraphs': [], '_rich': []}
         result['sections'].append(section)
         return section
 
@@ -1656,11 +1804,16 @@ def _extract_form_data(document: Document, hidden_text: _HiddenTextContext) -> t
             continue
 
         if current_section is not None:
-            paragraph_text = ('• ' + text) if _paragraph_is_list(block['paragraph']) else text
+            list_prefix = '• ' if _paragraph_is_list(block['paragraph']) else ''
+            paragraph_text = list_prefix + text
             current_section['_paragraphs'].append(paragraph_text)
+            current_section['_rich'].extend(_rich_paragraph_entries(block['paragraph'], text, list_prefix))
 
     for section in result['sections']:
         section['content'] = '\n\n'.join(section.pop('_paragraphs'))
+        content_rich = _content_rich(section['content'], section.pop('_rich'))
+        if content_rich is not None:
+            section['content_rich'] = content_rich
 
     # If no headings exist at all, retain unclaimed prose as a generic body
     # instead of mistaking it for a template section or silently dropping it.
@@ -1669,11 +1822,20 @@ def _extract_form_data(document: Document, hidden_text: _HiddenTextContext) -> t
         if candidate_index not in consumed_front_candidates
     ]
     if not result['sections'] and unclaimed_body and front_matter_complete:
-        result['sections'].append({
+        body_section = {
             'name': 'Makale Metni / Article Body',
             'level': '1',
             'content': '\n\n'.join(unclaimed_body),
-        })
+        }
+        content_rich = _content_rich(body_section['content'], [
+            entry
+            for candidate_index, text, candidate_paragraph in front_candidates
+            if candidate_index not in consumed_front_candidates
+            for entry in _rich_paragraph_entries(candidate_paragraph, text)
+        ])
+        if content_rich is not None:
+            body_section['content_rich'] = content_rich
+        result['sections'].append(body_section)
     result['references'] = '\n'.join(references)
 
     if not (result['cover']['tr_title'] or result['cover']['en_title']):
