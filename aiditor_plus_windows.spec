@@ -17,7 +17,7 @@ a = Analysis(
         (os.path.join(BASE, 'formatter.py'), '.'),
     ] + collect_data_files('webview') + collect_data_files('docx') + collect_data_files('pypdfium2') + collect_data_files('pypdfium2_raw') + copy_metadata('pypdfium2'),
     hiddenimports=[
-        'webview', 'webview.platforms.edgechromium', 'desktop', 'sqlite3', 'account_store', 'journal_templates',
+        'webview', 'webview.platforms.edgechromium', 'desktop', 'sqlite3', 'account_store', 'journal_templates', 'equations',
         'flask', 'flask.templating',
         'werkzeug', 'werkzeug.routing', 'werkzeug.serving',
         'werkzeug.exceptions', 'werkzeug.utils',

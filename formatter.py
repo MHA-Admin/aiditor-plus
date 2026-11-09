@@ -8,15 +8,18 @@ import re
 import os
 import io
 import zipfile
+import copy
 import csv
 import difflib
 import math
 import unicodedata
 from collections import Counter
 from contextvars import ContextVar
+from lxml import etree
 from urllib.parse import quote
 from journal_templates import normalize_settings
 from page_furniture import page_value, revision_dates, short_authors
+from equations import M as OMML_NS, omml_display_latex, omml_latex, omml_linear, safe_omml, to_xml as omml_to_xml
 from docx import Document
 from docx.oxml.ns import qn
 from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -291,6 +294,25 @@ _ImportReport.MESSAGES['unconverted_script'] = (
 )
 
 
+_ImportReport.MESSAGES['equation'] = (
+    "{count} Word denklemi aktarıldı. Word çıktısında özgün denklem yapısı korunur, LaTeX/PDF çıktısında "
+    "denkleme dönüştürülür; bölüm metin kutusunda doğrusal yazımla görünür. Denklemleri çıktıda kontrol edin."
+)
+_ImportReport.MESSAGES['unconverted_equation'] = (
+    "{count} Word denklemi LaTeX'e güvenli biçimde dönüştürülemedi; LaTeX/PDF çıktısında doğrusal metin olarak "
+    "yazılır (Word çıktısında özgün yapısı korunur). Bu denklemleri kontrol edin."
+)
+_ImportReport.MESSAGES['ole_equation'] = (
+    "{count} eski tip denklem nesnesi (Equation Editor/MathType) dönüştürülemedi; metinde "
+    "“[Denklem: Word nesnesi dönüştürülemedi]” yer tutucusu bırakıldı. Bu denklemleri Word'de yeni denklem "
+    "biçimine çevirip yeniden aktarın."
+)
+_ImportReport.MESSAGES['equation_outside_body'] = (
+    "{count} denklem makale gövdesi dışında (başlık, öz, kaynakça, tablo vb.) yalnız doğrusal metin olarak "
+    "aktarıldı; bu alanları kontrol edin."
+)
+
+
 _ON_OFF_FALSE = {'0', 'false', 'off'}
 
 
@@ -430,12 +452,21 @@ class _HiddenTextContext:
         self.resolver = _RunPropertyResolver(document)
         self.pieces: dict[object, int] = {}
         self.unconverted_scripts: dict[object, int] = {}
+        # Phase 1.5: equations per paragraph element (OMML, OMML without a
+        # LaTeX form, legacy OLE equation objects).
+        self.equations: dict[object, int] = {}
+        self.unconverted_equations: dict[object, int] = {}
+        self.ole_equations: dict[object, int] = {}
 
     def total(self) -> int:
         return sum(self.pieces.values())
 
     def total_unconverted_scripts(self) -> int:
         return sum(self.unconverted_scripts.values())
+
+    def total_equations(self) -> tuple[int, int, int]:
+        return (sum(self.equations.values()), sum(self.unconverted_equations.values()),
+                sum(self.ole_equations.values()))
 
 
 _HIDDEN_TEXT_CONTEXT: ContextVar[_HiddenTextContext | None] = ContextVar(
@@ -520,22 +551,41 @@ def _paragraph_text(paragraph, pieces: list | None = None) -> str:
     parts = []
     current_run = None
     paragraph_element = paragraph._p
+    context = _HIDDEN_TEXT_CONTEXT.get()
+    equations = unconverted_equations = ole_equations = 0
     hidden_pieces = 0
     previous_hidden = False
     unconverted_pieces = 0
     previous_unconverted = False
     alignment = None
 
-    def emit(text):
+    def emit(text, special=None):
         parts.append(text)
         if pieces is not None:
-            pieces.append((text, current_run))
+            pieces.append((text, current_run, special))
 
     def walk(node):
         nonlocal hidden_pieces, previous_hidden, unconverted_pieces, previous_unconverted, alignment, current_run
+        nonlocal equations, unconverted_equations, ole_equations
         for child in node:
             tag = child.tag
             if tag in _HIDDEN_TEXT_CONTAINERS:
+                continue
+            if context is not None and tag in (_OMML_MATH, _OMML_MATH_PARA):
+                # Phase 1.5: an equation becomes its linear Unicode text; the
+                # original OMML travels with it for the body's content_rich.
+                linear = omml_linear(child)
+                if linear:
+                    equations += 1
+                    display = tag == _OMML_MATH_PARA
+                    latex = omml_display_latex(child) if display else omml_latex(child)
+                    if latex is None:
+                        unconverted_equations += 1
+                    emit(linear, {'math': {'display': display, 'omml': equation_xml(child)}})
+                continue
+            if context is not None and tag == qn('w:object') and _is_ole_equation(child):
+                ole_equations += 1
+                emit(OLE_EQUATION_PLACEHOLDER)
                 continue
             if tag == qn('w:sdt') and child.find(qn('w:sdtPr') + '/' + qn('w:showingPlcHdr')) is not None:
                 continue  # an empty content control still shows "Click here to enter text"
@@ -580,15 +630,53 @@ def _paragraph_text(paragraph, pieces: list | None = None) -> str:
                 walk(child)
 
     walk(paragraph._p)
-    context = _HIDDEN_TEXT_CONTEXT.get()
     if context is not None:
         context.pieces[paragraph_element] = hidden_pieces
         context.unconverted_scripts[paragraph_element] = unconverted_pieces
+        context.equations[paragraph_element] = equations
+        context.unconverted_equations[paragraph_element] = unconverted_equations
+        context.ole_equations[paragraph_element] = ole_equations
     return ''.join(parts)
+
+
+_OMML_MATH = '{%s}oMath' % OMML_NS
+_OMML_MATH_PARA = '{%s}oMathPara' % OMML_NS
+OLE_EQUATION_PLACEHOLDER = '[Denklem: Word nesnesi dönüştürülemedi]'
+
+
+def equation_xml(node) -> str:
+    """Standalone OMML of an equation with only the namespace declarations it uses."""
+    standalone = copy.deepcopy(node)
+    etree.cleanup_namespaces(standalone)
+    return omml_to_xml(standalone)
+
+
+def _is_ole_equation(object_element) -> bool:
+    """Legacy Equation Editor 3.0 / MathType objects (``w:object`` with an Equation.* ProgID)."""
+    for element in object_element.iter():
+        if isinstance(element.tag, str) and element.tag.endswith('}OLEObject'):
+            prog_id = element.get('ProgID') or ''
+            if prog_id.startswith(('Equation.', 'MathType')):
+                return True
+    return False
 
 
 def _para_text(para) -> str:
     return _paragraph_text(para).strip()
+
+
+def _paragraph_is_math_only(paragraph) -> bool:
+    """True when the paragraph's visible text is only equations (Phase 1.5).
+
+    Such a paragraph is body content: it is never taken for a title, a
+    heading or a section label even when its linear text looks like one.
+    """
+    if _HIDDEN_TEXT_CONTEXT.get() is None:
+        return False
+    pieces: list = []
+    _paragraph_text(paragraph, pieces)
+    return (any(special and 'math' in special for _, _, special in pieces)
+            and all(special or not text.strip() for text, _, special in pieces))
 
 
 # ── Inline formatting model (Phase 1.4a) ─────────────────────────────────────
@@ -626,7 +714,11 @@ def _paragraph_inline_flags(paragraph: Paragraph, text: str) -> list[tuple[bool,
     flags: list[tuple[bool, bool]] = []
     cache: dict = {}
     paragraph_element = paragraph._p
-    for piece, run_element in pieces:
+    for piece, run_element, special in pieces:
+        if special is not None:
+            # Equations (and notes) are one unit: never formatted, split or merged.
+            flags.extend([(False, False, special)] * len(piece))
+            continue
         if run_element is None:
             value = _PLAIN_FLAGS
         elif run_element in cache:
@@ -652,7 +744,7 @@ def _smooth_whitespace_flags(text: str, flags: list[tuple[bool, bool]]) -> list[
     result = list(flags)
     previous = None
     for index, char in enumerate(text):
-        if not char.isspace():
+        if not char.isspace() or len(flags[index]) > 2:  # equations/notes keep their own spaces
             previous = flags[index]
             continue
         following = next((flags[j] for j in range(index + 1, len(text)) if not text[j].isspace()), None)
@@ -667,16 +759,21 @@ def _inline_segments(text: str, flags: list[tuple[bool, bool]]) -> list[dict]:
     segments: list[dict] = []
     current = None
     for char, value in zip(text, flags):
-        if segments and value == current:
+        special = value[2] if len(value) > 2 else None
+        key = (value[0], value[1], id(special) if special is not None else None)
+        if segments and key == current:
             segments[-1]['t'] += char
             continue
         segment = {'t': char}
-        if value[0]:
-            segment['b'] = True
-        if value[1]:
-            segment['i'] = True
+        if special is not None:
+            segment.update(copy.deepcopy(special))
+        else:
+            if value[0]:
+                segment['b'] = True
+            if value[1]:
+                segment['i'] = True
         segments.append(segment)
-        current = value
+        current = key
     return segments
 
 
@@ -726,12 +823,29 @@ def _content_rich(content: str, entries: list[dict]) -> dict | None:
 
 
 # ── Inline formatting in output (Phase 1.4b) ─────────────────────────────────
-# Both renderers ask ``section_paragraph_flags`` for the (bold, italic) of each
-# character of each paragraph. Formatting is applied only to a paragraph whose
-# text is exactly equal to a stored ``plain``; an edited paragraph renders as
-# plain text, so stale formatting can never land on changed text.
+# Both renderers ask ``section_paragraph_attrs`` for the (bold, italic,
+# special) of each character of each paragraph. Bold/italic are applied only
+# to a paragraph whose text is exactly equal to a stored ``plain``; an edited
+# paragraph renders as plain text, so stale formatting can never land on
+# changed text. ``special`` is the stored segment of an equation (Phase 1.5)
+# or a note (Phase 1.6): one unit that is never split, formatted or linked.
 _INLINE_URL_RE = re.compile(r'https?://\S+', re.IGNORECASE)
 _UNMATCHED = object()
+_SPECIAL_KEYS = ('math',)
+_PLAIN_ATTRS = (False, False, None)
+
+
+def _valid_special(segment) -> bool:
+    specials = [key for key in _SPECIAL_KEYS if key in segment]
+    if not specials:
+        return True
+    if len(specials) > 1 or 'b' in segment or 'i' in segment:
+        return False
+    if specials[0] == 'math':
+        value = segment['math']
+        return (isinstance(value, dict) and set(value) <= {'display', 'omml'}
+                and isinstance(value.get('display', False), bool) and isinstance(value.get('omml'), str))
+    return False
 
 
 def _valid_rich_entry(entry) -> bool:
@@ -740,30 +854,68 @@ def _valid_rich_entry(entry) -> bool:
     segments = entry.get('segments')
     if not isinstance(segments, list) or not segments:
         return False
+    allowed = {'t', 'b', 'i', *_SPECIAL_KEYS}
     for segment in segments:
         if (not isinstance(segment, dict) or not isinstance(segment.get('t'), str) or not segment['t']
-                or any(key not in ('t', 'b', 'i') for key in segment)
-                or any(not isinstance(segment[key], bool) for key in ('b', 'i') if key in segment)):
+                or any(key not in allowed for key in segment)
+                or any(not isinstance(segment[key], bool) for key in ('b', 'i') if key in segment)
+                or not _valid_special(segment)):
             return False
     return ''.join(segment['t'] for segment in segments) == entry['plain']
 
 
-def _entry_flags(entry) -> list[tuple[bool, bool]] | None:
-    flags = []
+def _segment_special(segment):
+    return segment if any(key in segment for key in _SPECIAL_KEYS) else None
+
+
+def _entry_attrs(entry) -> list[tuple] | None:
+    attrs = []
     for segment in entry['segments']:
-        flags.extend([(segment.get('b') is True, segment.get('i') is True)] * len(segment['t']))
-    return flags if any(bold or italic for bold, italic in flags) else None
+        special = _segment_special(segment)
+        value = (False, False, special) if special else (segment.get('b') is True, segment.get('i') is True, None)
+        attrs.extend([value] * len(segment['t']))
+    return attrs if any(bold or italic or special for bold, italic, special in attrs) else None
 
 
-def section_paragraph_flags(section: dict) -> list[list[tuple[bool, bool]] | None]:
-    """Per-character (bold, italic) for each paragraph of ``section['content']``.
+def _anchored_specials(entry, paragraph: str) -> list[tuple] | None:
+    """Equations/notes of an edited paragraph, kept only where they are unambiguous.
+
+    A special segment is placed when its text occurs exactly once in both the
+    stored and the edited paragraph and the characters on both sides of it are
+    unchanged. Bold/italic are never carried over to edited text.
+    """
+    attrs = [_PLAIN_ATTRS] * len(paragraph)
+    placed = False
+    old = entry['plain']
+    for segment in entry['segments']:
+        special = _segment_special(segment)
+        text = segment['t']
+        if special is None or old.count(text) != 1 or paragraph.count(text) != 1:
+            continue
+        old_at, new_at = old.index(text), paragraph.index(text)
+        before_old = old[old_at - 1] if old_at else ''
+        before_new = paragraph[new_at - 1] if new_at else ''
+        after_old = old[old_at + len(text):old_at + len(text) + 1]
+        after_new = paragraph[new_at + len(text):new_at + len(text) + 1]
+        if before_old != before_new or after_old != after_new:
+            continue
+        if any(attrs[k] is not _PLAIN_ATTRS for k in range(new_at, new_at + len(text))):
+            continue
+        attrs[new_at:new_at + len(text)] = [(False, False, special)] * len(text)
+        placed = True
+    return attrs if placed else None
+
+
+def section_paragraph_attrs(section: dict) -> list[list[tuple] | None]:
+    """Per-character (bold, italic, special) for each paragraph of ``section['content']``.
 
     The list is aligned with ``_content_paragraphs(content)``; an item is None
-    when that paragraph has no usable formatting. Stored entries are matched to
+    when that paragraph has nothing to apply. Stored entries are matched to
     the current paragraphs by exact plain text in order (``difflib``), so
     inserted, deleted and edited paragraphs do not shift formatting onto other
     paragraphs, and identical paragraphs keep their own formatting. A moved
-    paragraph is matched afterwards only when its text is unambiguous.
+    paragraph is matched afterwards only when its text is unambiguous. An
+    edited paragraph keeps only its unambiguous equations and notes.
     Malformed or unknown-version ``content_rich`` is ignored.
     """
     content = section.get('content', '')
@@ -781,7 +933,7 @@ def section_paragraph_flags(section: dict) -> list[list[tuple[bool, bool]] | Non
         for offset in range(size):
             used_entries.add(first_entry + offset)
             matched.add(first_paragraph + offset)
-            result[first_paragraph + offset] = _entry_flags(entries[first_entry + offset])
+            result[first_paragraph + offset] = _entry_attrs(entries[first_entry + offset])
     free_entries = Counter(stored[i] for i in range(len(entries)) if i not in used_entries and entries[i])
     free_paragraphs = Counter(paragraphs[i] for i in range(len(paragraphs)) if i not in matched)
     for index, paragraph in enumerate(paragraphs):
@@ -789,30 +941,78 @@ def section_paragraph_flags(section: dict) -> list[list[tuple[bool, bool]] | Non
             continue
         entry_index = next(i for i in range(len(entries)) if i not in used_entries and stored[i] == paragraph)
         used_entries.add(entry_index)
-        result[index] = _entry_flags(entries[entry_index])
-    for index, flags in enumerate(result):
-        if flags is not None:
+        matched.add(index)
+        result[index] = _entry_attrs(entries[entry_index])
+    for tag, old_start, old_end, new_start, new_end in matcher.get_opcodes():
+        if tag != 'replace':
+            continue
+        for offset in range(min(old_end - old_start, new_end - new_start)):
+            entry_index, index = old_start + offset, new_start + offset
+            if entries[entry_index] and entry_index not in used_entries and index not in matched:
+                result[index] = _anchored_specials(entries[entry_index], paragraphs[index])
+    for index, attrs in enumerate(result):
+        if attrs is not None:
             # A URL keeps one link target: it takes the formatting of its first character.
             for match in _INLINE_URL_RE.finditer(paragraphs[index]):
-                flags[match.start():match.end()] = [flags[match.start()]] * (match.end() - match.start())
+                if any(attrs[k][2] is not None for k in range(match.start(), match.end())):
+                    continue
+                attrs[match.start():match.end()] = [attrs[match.start()]] * (match.end() - match.start())
     return result
 
 
-def formatted_runs(text: str, flags: list[tuple[bool, bool]], start: int, end: int) -> list[tuple[str, bool, bool]]:
-    """``text[start:end]`` as (piece, bold, italic) runs of equal formatting."""
+def section_paragraph_flags(section: dict) -> list[list[tuple[bool, bool]] | None]:
+    """(bold, italic) view of ``section_paragraph_attrs`` (specials count as plain)."""
+    return [None if attrs is None else [(bold, italic) for bold, italic, _ in attrs]
+            for attrs in section_paragraph_attrs(section)]
+
+
+def formatted_runs(text: str, attrs: list[tuple], start: int, end: int) -> list[tuple]:
+    """``text[start:end]`` as (piece, bold, italic, special) runs of equal formatting."""
     runs: list[list] = []
     for position in range(start, end):
-        bold, italic = flags[position]
-        if runs and runs[-1][1] == bold and runs[-1][2] == italic:
+        bold, italic, special = attrs[position]
+        if runs and runs[-1][1] == bold and runs[-1][2] == italic and runs[-1][3] is special:
             runs[-1][0] += text[position]
         else:
-            runs.append([text[position], bold, italic])
+            runs.append([text[position], bold, italic, special])
     return [tuple(run) for run in runs]
 
 
-def _latex_formatted(text: str, flags, start: int, end: int, escape_text) -> str:
+def citation_spans(citations, text: str, attrs) -> list[tuple[int, int, int]]:
+    """Citation links of a paragraph; never across an equation or a note marker."""
+    spans = list(citations.spans(text))
+    if attrs is None:
+        return spans
+    return [(left, right, index) for left, right, index in spans
+            if all(attrs[k][2] is None for k in range(left, right))]
+
+
+def math_latex(special: dict) -> str | None:
+    """LaTeX for a stored equation, regenerated from its OMML (never from stored LaTeX)."""
+    node = safe_omml(special.get('omml'))
+    if node is None:
+        return None
+    if node.tag == _OMML_MATH_PARA:
+        return omml_display_latex(node)
+    inner = omml_latex(node)
+    if inner is None:
+        return None
+    return (r'\[' + inner + r'\]') if special.get('display') else (r'\(' + inner + r'\)')
+
+
+def _latex_special(piece: str, special: dict, escape_text, state) -> str:
+    if 'math' in special:
+        latex = math_latex(special['math'])
+        return latex if latex is not None else escape_text(piece)
+    return escape_text(piece)
+
+
+def _latex_formatted(text: str, attrs, start: int, end: int, escape_text, state=None) -> str:
     pieces = []
-    for piece, bold, italic in formatted_runs(text, flags, start, end):
+    for piece, bold, italic, special in formatted_runs(text, attrs, start, end):
+        if special is not None:
+            pieces.append(_latex_special(piece, special, escape_text, state))
+            continue
         escaped = escape_text(piece)
         if italic:
             escaped = r'\textit{' + escaped + '}'
@@ -822,17 +1022,17 @@ def _latex_formatted(text: str, flags, start: int, end: int, escape_text) -> str
     return ''.join(pieces)
 
 
-def _latex_paragraph(text: str, flags, citations, escape_text) -> str:
+def _latex_paragraph(text: str, attrs, citations, escape_text, state=None) -> str:
     """A body paragraph in LaTeX; citation links wrap the formatted citation text."""
-    if flags is None:
+    if attrs is None:
         return citations.latex(text, escape_text)
     pieces, cursor = [], 0
-    for left, right, index in citations.spans(text):
-        pieces.append(_latex_formatted(text, flags, cursor, left, escape_text))
+    for left, right, index in citation_spans(citations, text, attrs):
+        pieces.append(_latex_formatted(text, attrs, cursor, left, escape_text, state))
         pieces.append(r'\hyperlink{aiditor_ref_' + str(index) + '}{'
-                      + _latex_formatted(text, flags, left, right, escape_text) + '}')
+                      + _latex_formatted(text, attrs, left, right, escape_text, state) + '}')
         cursor = right
-    pieces.append(_latex_formatted(text, flags, cursor, len(text), escape_text))
+    pieces.append(_latex_formatted(text, attrs, cursor, len(text), escape_text, state))
     return ''.join(pieces)
 
 
@@ -1260,6 +1460,9 @@ def _paragraph_images(paragraph: Paragraph, document: Document) -> list[dict]:
     images = []
     seen = set()
     for blip in paragraph._p.xpath('.//a:blip | .//*[local-name()="imagedata"]'):
+        if _HIDDEN_TEXT_CONTEXT.get() is not None and any(
+                _is_ole_equation(ancestor) for ancestor in blip.iterancestors(qn('w:object'))):
+            continue  # Phase 1.5: an OLE equation's preview is not a figure (placeholder + warning instead)
         rel_id = blip.get(qn('r:embed')) or blip.get(qn('r:id'))
         if not rel_id:
             continue
@@ -1440,6 +1643,7 @@ def _docx_blocks(document: Document) -> tuple[list[dict], list[dict]]:
                 'text': text,
                 'paragraph': paragraph,
                 'style': paragraph.style.name if paragraph.style else '',
+                'math_only': _paragraph_is_math_only(paragraph),
             })
         for image in _paragraph_images(paragraph, document):
             image_index = len(images)
@@ -1646,7 +1850,7 @@ def _extract_form_data(document: Document, hidden_text: _HiddenTextContext) -> t
         if index >= special_start:
             break
         text = blocks[index]['text']
-        if (len(text) < 8 or _looks_like_front_matter(text)
+        if (len(text) < 8 or _looks_like_front_matter(text) or blocks[index].get('math_only')
                 or _caption_info(text) or _is_article_type_text(text)):
             continue
         style_lower = blocks[index]['style'].lower()
@@ -1833,7 +2037,8 @@ def _extract_form_data(document: Document, hidden_text: _HiddenTextContext) -> t
             references.append(text)
             continue
 
-        mapped = SECTION_MAP.get(key)
+        math_only = block.get('math_only', False)
+        mapped = None if math_only else SECTION_MAP.get(key)
         if mapped == '__REFERENCES__':
             in_references = True
             optional_endmatter_field = None
@@ -1847,7 +2052,7 @@ def _extract_form_data(document: Document, hidden_text: _HiddenTextContext) -> t
             abstract_lang = keyword_lang = None
             continue
 
-        abstract_info = _abstract_label_info(text)
+        abstract_info = None if math_only else _abstract_label_info(text)
         if abstract_info:
             abstract_lang, abstract_value = abstract_info
             keyword_lang = None
@@ -1859,7 +2064,7 @@ def _extract_form_data(document: Document, hidden_text: _HiddenTextContext) -> t
                 )
             continue
 
-        keyword_info = _keyword_label_info(text)
+        keyword_info = None if math_only else _keyword_label_info(text)
         if keyword_info:
             keyword_lang, value = keyword_info
             if value:
@@ -1877,7 +2082,7 @@ def _extract_form_data(document: Document, hidden_text: _HiddenTextContext) -> t
             front_matter_complete = True
             continue
 
-        heading_info = _dynamic_section_heading(text, block['paragraph'])
+        heading_info = None if math_only else _dynamic_section_heading(text, block['paragraph'])
         # Bold "Purpose"/"Methods" labels can belong to a structured abstract.
         # Without keywords, require explicit heading structure to start the body.
         ends_abstract = (
@@ -1969,6 +2174,18 @@ def _extract_form_data(document: Document, hidden_text: _HiddenTextContext) -> t
         report.add('hidden_text', hidden_text.total())
     if hidden_text.total_unconverted_scripts():
         report.add('unconverted_script', hidden_text.total_unconverted_scripts())
+    equations, unconverted_equations, ole_equations = hidden_text.total_equations()
+    if equations:
+        report.add('equation', equations)
+        body_equations = sum(1 for section in result['sections']
+                             for entry in section.get('content_rich', {}).get('paragraphs', [])
+                             for segment in entry['segments'] if 'math' in segment)
+        if equations > body_equations:
+            report.add('equation_outside_body', equations - body_equations)
+    if unconverted_equations:
+        report.add('unconverted_equation', unconverted_equations)
+    if ole_equations:
+        report.add('ole_equation', ole_equations)
     # Empty unless an import phase counted changed or unconvertible content.
     result['warnings'].extend(report.warnings())
     result['stats'].update(report.stats())
@@ -3215,6 +3432,7 @@ def generate_latex_from_form(data: dict, figure_file_bytes: dict,
 
     # ── Body sections + paragraph-level figure/table placement ──
     body_lines = []
+    rich_state = {}   # shared by body paragraphs (Phase 1.6 endnotes)
     placed_ft_ids = set()   # track which fts have already been placed
 
     for sec in sections:
@@ -3253,10 +3471,10 @@ def generate_latex_from_form(data: dict, figure_file_bytes: dict,
             if not raw_paras:
                 raw_paras = [content]
 
-            paragraph_flags = section_paragraph_flags(sec)
+            paragraph_attrs = section_paragraph_attrs(sec)
             for para_index, para in enumerate(raw_paras):
-                flags = paragraph_flags[para_index] if para_index < len(paragraph_flags) else None
-                body_lines.append(_latex_paragraph(para, flags, citations, _escape_with_breakable_urls))
+                attrs = paragraph_attrs[para_index] if para_index < len(paragraph_attrs) else None
+                body_lines.append(_latex_paragraph(para, attrs, citations, _escape_with_breakable_urls, rich_state))
                 body_lines.append('')
 
                 # Check if any ft's anchor text is found in this paragraph

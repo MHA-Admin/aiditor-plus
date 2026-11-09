@@ -1002,13 +1002,19 @@ function normalizeContentRich(rich) {
 }
 
 function richEntryIsFormatted(entry) {
-  return entry.segments.some(segment => segment.b === true || segment.i === true);
+  return entry.segments.some(segment => segment.b === true || segment.i === true || richSegmentIsSpecial(segment));
+}
+
+// Equations (and notes) are kept for edited paragraphs too: output places them
+// again when their text is unchanged and unambiguous (formatter.py).
+function richSegmentIsSpecial(segment) {
+  return Boolean(segment.math || segment.note);
 }
 
 function currentContentRich(block, content) {
   const rich = block.contentRich;
   if (!rich) return null;
-  const paragraphs = rich.paragraphs.filter(entry => content.includes(entry.plain));
+  const paragraphs = rich.paragraphs.filter(entry => content.includes(entry.plain) || entry.segments.some(richSegmentIsSpecial));
   return paragraphs.some(richEntryIsFormatted) ? {version: 1, paragraphs} : null;
 }
 
@@ -1031,8 +1037,11 @@ function updateRichNote(block) {
     if (index >= 0) { kept += 1; remaining.splice(index, 1); }
   }
   const lost = formatted.length - kept;
-  let text = kept ? `Word’deki kalın/italik biçim ${kept} paragrafta korunuyor ve çıktıya aktarılacak.` : '';
-  if (lost) text += (text ? ' ' : '') + `${lost} paragraf değiştirildiği için o paragrafların kalın/italik biçimi artık uygulanmayacak; metin olduğu gibi kalır.`;
+  const specials = formatted.some(entry => entry.segments.some(richSegmentIsSpecial));
+  const what = specials ? 'kalın/italik biçim ve denklemler' : 'kalın/italik biçim';
+  let text = kept ? `Word’deki ${what} ${kept} paragrafta korunuyor ve çıktıya aktarılacak.` : '';
+  if (lost) text += (text ? ' ' : '') + `${lost} paragraf değiştirildiği için o paragrafların kalın/italik biçimi artık uygulanmayacak; metin olduğu gibi kalır.` +
+    (specials ? ' Bu paragraflardaki denklemler, denklem metnine ve hemen yanındaki karakterlere dokunulmadıysa korunur.' : '');
   note.dataset.state = lost ? 'partial' : 'kept';
   note.querySelector('span').textContent = text;
   note.hidden = false;

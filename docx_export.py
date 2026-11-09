@@ -15,10 +15,11 @@ from docx.shared import Cm, Pt, RGBColor
 from PIL import Image
 
 from formatter import (_cover_profile, _english_label, _normalize_table_model, _turkish_label,
-                       _numbered_section_title, _parse_table_rows, formatted_runs, section_paragraph_flags,
+                       _numbered_section_title, _parse_table_rows, citation_spans, formatted_runs, section_paragraph_attrs,
                        turkish_sort_key)
 from journal_templates import normalize_settings
 from citation_links import CitationIndex
+from equations import safe_omml
 from page_furniture import (LAST_PAGE, article_values, block_height_cm, citation_text, page_value,
                             resolved_parts, revision_dates, running_slots, text_parts)
 
@@ -800,19 +801,34 @@ def _figure_or_table(doc, item, figures, english):
     _paragraph(doc, after=3, size=2)
 
 
-def _formatted_body_text(p, text, flags, citations):
+def _special_run(p, piece, special):
+    """Equation (Phase 1.5): the original Word OMML; plain text when it cannot be used."""
+    if 'math' in special:
+        node = safe_omml(special['math'].get('omml'))
+        if node is not None:
+            p._p.append(copy.deepcopy(node))
+            return
+    _text(p, piece)
+
+
+def _formatted_body_text(p, text, attrs, citations):
     """Body paragraph with partial bold/italic (Phase 1.4b); citation links keep their runs' formatting."""
+    def write(start, end):
+        for piece, bold, italic, special in formatted_runs(text, attrs, start, end):
+            if special is not None:
+                _special_run(p, piece, special)
+            else:
+                _text(p, piece, bold=bold, italic=italic)
+
     cursor = 0
-    for start, end, index in citations.spans(text):
-        for piece, bold, italic in formatted_runs(text, flags, cursor, start):
-            _text(p, piece, bold=bold, italic=italic)
+    for start, end, index in citation_spans(citations, text, attrs):
+        write(cursor, start)
         link = _element('hyperlink', anchor='aiditor_ref_' + str(index), history='1')
-        for piece, bold, italic in formatted_runs(text, flags, start, end):
+        for piece, bold, italic, _ in formatted_runs(text, attrs, start, end):
             link.append(_run(p, piece, bold=bold, italic=italic)._r)
         p._p.append(link)
         cursor = end
-    for piece, bold, italic in formatted_runs(text, flags, cursor, len(text)):
-        _text(p, piece, bold=bold, italic=italic)
+    write(cursor, len(text))
 
 
 def _body(doc, data, settings, figures):
@@ -837,7 +853,7 @@ def _body(doc, data, settings, figures):
         for i, item in assigned:
             if item.get('placement') == 'section_start':
                 _figure_or_table(doc, item, figures, english); placed.add(i)
-        paragraph_flags = iter(section_paragraph_flags(section))
+        paragraph_flags = iter(section_paragraph_attrs(section))
         for para in re.split(r'\n\s*\n', section.get('content', '').strip()):
             if para.strip():
                 flags = next(paragraph_flags, None)

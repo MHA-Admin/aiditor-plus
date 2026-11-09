@@ -29,6 +29,7 @@ from journal_templates import TEMPLATES, default_settings, normalize_settings
 from citation_links import citation_report
 from page_furniture import TOKENS, RUNNING_DEFAULTS
 from docx_export import generate_docx_from_form, DOCX_MIME
+from equations import safe_omml
 from formatter import CONTENT_RICH_VERSION, generate_latex_from_form, extract_form_data_from_docx, _normalize_table_model
 
 APP_VERSION = '2.4.2'
@@ -133,10 +134,19 @@ def _validate_content_rich(rich):
                 or not isinstance(entry.get('segments'), list) or len(entry['segments']) > CONTENT_RICH_LIMITS['segments']):
             raise ValueError('Bölüm biçim bilgisi geçersiz veya çok büyük.')
         for segment in entry['segments']:
-            if (not isinstance(segment, dict) or set(segment) - {'t', 'b', 'i'} or not isinstance(segment.get('t'), str)
+            if (not isinstance(segment, dict) or set(segment) - {'t', 'b', 'i', 'math'} or not isinstance(segment.get('t'), str)
                     or len(segment['t']) > CONTENT_RICH_LIMITS['plain']
                     or any(not isinstance(segment[key], bool) for key in ('b', 'i') if key in segment)):
                 raise ValueError('Bölüm biçim bilgisi geçersiz.')
+            if 'math' in segment:
+                _validate_equation(segment['math'])
+
+
+def _validate_equation(value):
+    """A stored Word equation (Phase 1.5): its OMML must be plain math/Word markup."""
+    if (not isinstance(value, dict) or set(value) - {'display', 'omml'}
+            or not isinstance(value.get('display', False), bool) or safe_omml(value.get('omml')) is None):
+        raise ValueError('Bölümdeki denklem verisi geçersiz.')
 
 
 def validate_form(data, draft=False):
