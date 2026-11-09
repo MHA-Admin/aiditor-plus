@@ -39,6 +39,7 @@ jobs:
       - run: python tests/browser_scholarly.py
       - run: python tests/browser_bilingual_panel.py
       - run: python tests/browser_rich_text.py
+      - run: python tests/browser_scientific_import.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -120,6 +121,8 @@ jobs:
           generate_release_notes: true
           body: |
             Akademik dergi editörlerinin işlerini kolaylaştırmak için kâr amacı güdülmeden geliştirilen, MIT lisanslı açık kaynak uygulama.
+
+            2.5.0: Word'den aktarılan makalelerde gövde metnindeki kısmi kalın/italik biçimler, Word denklemleri, dipnotlar ve son notlar Word ve PDF çıktısında korunur; dönüştürülemeyen içerik için uyarı verilir. Biçimli makaleler proje sürümü 2 ile kaydedilir; 2.4.x bu dosyaları açmaz. Dergi şablonları ve mizanpaj ayarları değişmedi.
 
             2.4.2: Zotero, Mendeley ve EndNote ile eklenen metin içi atıflar artık Word içe aktarımında kaybolmuyor; metne aktarılıyor ve kaynakçaya bağlanıyor (eski sürümle aktarılan makaleleri yeniden içe aktarın). Önerilen atıfın sonuna makalenin DOI bağlantısı eklenir; atıfta derginin Türkçe (varsayılan) veya İngilizce adı seçilebilir.
 

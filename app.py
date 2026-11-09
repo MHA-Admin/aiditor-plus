@@ -32,7 +32,7 @@ from docx_export import generate_docx_from_form, DOCX_MIME
 from equations import safe_omml
 from formatter import CONTENT_RICH_VERSION, MAX_NOTE_PARAGRAPHS, generate_latex_from_form, extract_form_data_from_docx, _normalize_table_model
 
-APP_VERSION = '2.4.2'
+APP_VERSION = '2.5.0'
 
 
 def resource_path(relative_path):
