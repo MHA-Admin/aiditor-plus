@@ -15,7 +15,8 @@ from docx.shared import Cm, Pt, RGBColor
 from PIL import Image
 
 from formatter import (_cover_profile, _english_label, _normalize_table_model, _turkish_label,
-                       _numbered_section_title, _parse_table_rows, turkish_sort_key)
+                       _numbered_section_title, _parse_table_rows, formatted_runs, section_paragraph_flags,
+                       turkish_sort_key)
 from journal_templates import normalize_settings
 from citation_links import CitationIndex
 from page_furniture import (LAST_PAGE, article_values, block_height_cm, citation_text, page_value,
@@ -799,6 +800,21 @@ def _figure_or_table(doc, item, figures, english):
     _paragraph(doc, after=3, size=2)
 
 
+def _formatted_body_text(p, text, flags, citations):
+    """Body paragraph with partial bold/italic (Phase 1.4b); citation links keep their runs' formatting."""
+    cursor = 0
+    for start, end, index in citations.spans(text):
+        for piece, bold, italic in formatted_runs(text, flags, cursor, start):
+            _text(p, piece, bold=bold, italic=italic)
+        link = _element('hyperlink', anchor='aiditor_ref_' + str(index), history='1')
+        for piece, bold, italic in formatted_runs(text, flags, start, end):
+            link.append(_run(p, piece, bold=bold, italic=italic)._r)
+        p._p.append(link)
+        cursor = end
+    for piece, bold, italic in formatted_runs(text, flags, cursor, len(text)):
+        _text(p, piece, bold=bold, italic=italic)
+
+
 def _body(doc, data, settings, figures):
     english = settings['english_only']
     scholarly = settings['template_id'] == 'scholarly'
@@ -821,8 +837,10 @@ def _body(doc, data, settings, figures):
         for i, item in assigned:
             if item.get('placement') == 'section_start':
                 _figure_or_table(doc, item, figures, english); placed.add(i)
+        paragraph_flags = iter(section_paragraph_flags(section))
         for para in re.split(r'\n\s*\n', section.get('content', '').strip()):
             if para.strip():
+                flags = next(paragraph_flags, None)
                 p = _paragraph(doc, align='justify')
                 if scholarly:
                     p.paragraph_format.first_line_indent = Cm(1.25)
@@ -832,15 +850,18 @@ def _body(doc, data, settings, figures):
                     p.paragraph_format.first_line_indent = Cm(0)
                     p.paragraph_format.line_spacing = 1
                     p.paragraph_format.space_after = Pt(6)
-                cursor = 0
-                for start, end, index in citations.spans(para.strip()):
-                    _text(p, para.strip()[cursor:start])
-                    link = _element('hyperlink', anchor='aiditor_ref_' + str(index), history='1')
-                    run = _run(p, para.strip()[start:end])
-                    link.append(run._r)
-                    p._p.append(link)
-                    cursor = end
-                _text(p, para.strip()[cursor:])
+                if flags is None:
+                    cursor = 0
+                    for start, end, index in citations.spans(para.strip()):
+                        _text(p, para.strip()[cursor:start])
+                        link = _element('hyperlink', anchor='aiditor_ref_' + str(index), history='1')
+                        run = _run(p, para.strip()[start:end])
+                        link.append(run._r)
+                        p._p.append(link)
+                        cursor = end
+                    _text(p, para.strip()[cursor:])
+                else:
+                    _formatted_body_text(p, para.strip(), flags, citations)
                 for i, item in assigned:
                     anchor = item.get('after_para', '').strip()
                     if i not in placed and anchor and anchor.lower() in para.lower():

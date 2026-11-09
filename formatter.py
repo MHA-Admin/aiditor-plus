@@ -9,8 +9,10 @@ import os
 import io
 import zipfile
 import csv
+import difflib
 import math
 import unicodedata
+from collections import Counter
 from contextvars import ContextVar
 from urllib.parse import quote
 from journal_templates import normalize_settings
@@ -721,6 +723,117 @@ def _content_rich(content: str, entries: list[dict]) -> dict | None:
     if any(''.join(segment['t'] for segment in entry['segments']) != entry['plain'] for entry in entries):
         return None
     return {'version': CONTENT_RICH_VERSION, 'paragraphs': entries}
+
+
+# ── Inline formatting in output (Phase 1.4b) ─────────────────────────────────
+# Both renderers ask ``section_paragraph_flags`` for the (bold, italic) of each
+# character of each paragraph. Formatting is applied only to a paragraph whose
+# text is exactly equal to a stored ``plain``; an edited paragraph renders as
+# plain text, so stale formatting can never land on changed text.
+_INLINE_URL_RE = re.compile(r'https?://\S+', re.IGNORECASE)
+_UNMATCHED = object()
+
+
+def _valid_rich_entry(entry) -> bool:
+    if not isinstance(entry, dict) or not isinstance(entry.get('plain'), str) or not entry['plain']:
+        return False
+    segments = entry.get('segments')
+    if not isinstance(segments, list) or not segments:
+        return False
+    for segment in segments:
+        if (not isinstance(segment, dict) or not isinstance(segment.get('t'), str) or not segment['t']
+                or any(key not in ('t', 'b', 'i') for key in segment)
+                or any(not isinstance(segment[key], bool) for key in ('b', 'i') if key in segment)):
+            return False
+    return ''.join(segment['t'] for segment in segments) == entry['plain']
+
+
+def _entry_flags(entry) -> list[tuple[bool, bool]] | None:
+    flags = []
+    for segment in entry['segments']:
+        flags.extend([(segment.get('b') is True, segment.get('i') is True)] * len(segment['t']))
+    return flags if any(bold or italic for bold, italic in flags) else None
+
+
+def section_paragraph_flags(section: dict) -> list[list[tuple[bool, bool]] | None]:
+    """Per-character (bold, italic) for each paragraph of ``section['content']``.
+
+    The list is aligned with ``_content_paragraphs(content)``; an item is None
+    when that paragraph has no usable formatting. Stored entries are matched to
+    the current paragraphs by exact plain text in order (``difflib``), so
+    inserted, deleted and edited paragraphs do not shift formatting onto other
+    paragraphs, and identical paragraphs keep their own formatting. A moved
+    paragraph is matched afterwards only when its text is unambiguous.
+    Malformed or unknown-version ``content_rich`` is ignored.
+    """
+    content = section.get('content', '')
+    paragraphs = _content_paragraphs(content) if isinstance(content, str) else []
+    result: list = [None] * len(paragraphs)
+    rich = section.get('content_rich')
+    if (not paragraphs or not isinstance(rich, dict) or rich.get('version') != CONTENT_RICH_VERSION
+            or not isinstance(rich.get('paragraphs'), list)):
+        return result
+    entries = [entry if _valid_rich_entry(entry) else None for entry in rich['paragraphs']]
+    stored = [entry['plain'] if entry else _UNMATCHED for entry in entries]
+    used_entries, matched = set(), set()
+    matcher = difflib.SequenceMatcher(None, stored, paragraphs, autojunk=False)
+    for first_entry, first_paragraph, size in matcher.get_matching_blocks():
+        for offset in range(size):
+            used_entries.add(first_entry + offset)
+            matched.add(first_paragraph + offset)
+            result[first_paragraph + offset] = _entry_flags(entries[first_entry + offset])
+    free_entries = Counter(stored[i] for i in range(len(entries)) if i not in used_entries and entries[i])
+    free_paragraphs = Counter(paragraphs[i] for i in range(len(paragraphs)) if i not in matched)
+    for index, paragraph in enumerate(paragraphs):
+        if index in matched or free_entries[paragraph] != 1 or free_paragraphs[paragraph] != 1:
+            continue
+        entry_index = next(i for i in range(len(entries)) if i not in used_entries and stored[i] == paragraph)
+        used_entries.add(entry_index)
+        result[index] = _entry_flags(entries[entry_index])
+    for index, flags in enumerate(result):
+        if flags is not None:
+            # A URL keeps one link target: it takes the formatting of its first character.
+            for match in _INLINE_URL_RE.finditer(paragraphs[index]):
+                flags[match.start():match.end()] = [flags[match.start()]] * (match.end() - match.start())
+    return result
+
+
+def formatted_runs(text: str, flags: list[tuple[bool, bool]], start: int, end: int) -> list[tuple[str, bool, bool]]:
+    """``text[start:end]`` as (piece, bold, italic) runs of equal formatting."""
+    runs: list[list] = []
+    for position in range(start, end):
+        bold, italic = flags[position]
+        if runs and runs[-1][1] == bold and runs[-1][2] == italic:
+            runs[-1][0] += text[position]
+        else:
+            runs.append([text[position], bold, italic])
+    return [tuple(run) for run in runs]
+
+
+def _latex_formatted(text: str, flags, start: int, end: int, escape_text) -> str:
+    pieces = []
+    for piece, bold, italic in formatted_runs(text, flags, start, end):
+        escaped = escape_text(piece)
+        if italic:
+            escaped = r'\textit{' + escaped + '}'
+        if bold:
+            escaped = r'\textbf{' + escaped + '}'
+        pieces.append(escaped)
+    return ''.join(pieces)
+
+
+def _latex_paragraph(text: str, flags, citations, escape_text) -> str:
+    """A body paragraph in LaTeX; citation links wrap the formatted citation text."""
+    if flags is None:
+        return citations.latex(text, escape_text)
+    pieces, cursor = [], 0
+    for left, right, index in citations.spans(text):
+        pieces.append(_latex_formatted(text, flags, cursor, left, escape_text))
+        pieces.append(r'\hyperlink{aiditor_ref_' + str(index) + '}{'
+                      + _latex_formatted(text, flags, left, right, escape_text) + '}')
+        cursor = right
+    pieces.append(_latex_formatted(text, flags, cursor, len(text), escape_text))
+    return ''.join(pieces)
 
 
 def _style_ppr_chain(paragraph: Paragraph):
@@ -3140,8 +3253,10 @@ def generate_latex_from_form(data: dict, figure_file_bytes: dict,
             if not raw_paras:
                 raw_paras = [content]
 
-            for para in raw_paras:
-                body_lines.append(citations.latex(para, _escape_with_breakable_urls))
+            paragraph_flags = section_paragraph_flags(sec)
+            for para_index, para in enumerate(raw_paras):
+                flags = paragraph_flags[para_index] if para_index < len(paragraph_flags) else None
+                body_lines.append(_latex_paragraph(para, flags, citations, _escape_with_breakable_urls))
                 body_lines.append('')
 
                 # Check if any ft's anchor text is found in this paragraph

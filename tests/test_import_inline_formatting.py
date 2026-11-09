@@ -398,7 +398,7 @@ class CitationTests(InvariantMixin, unittest.TestCase):
 
 
 class OutputUnchangedTests(unittest.TestCase):
-    """1.4a only produces data: renderers ignore content_rich, and figure anchors are unchanged."""
+    """Figure anchors are unchanged; output differs from the plain twin only where text is formatted."""
 
     @staticmethod
     def build(document):
@@ -430,16 +430,24 @@ class OutputUnchangedTests(unittest.TestCase):
         article['references'] = '\n'.join(REFERENCES)
         return article
 
-    def test_latex_and_word_output_ignore_content_rich(self):
+    def test_output_changes_only_in_formatted_paragraphs(self):
+        """Phase 1.4b applies content_rich; everything outside those paragraphs stays byte-identical."""
         with_rich = self._article(copy.deepcopy(self.data['sections']))
         without = self._article(copy.deepcopy(self.twin['sections']))
         self.assertIn('content_rich', with_rich['sections'][0])
-        tex = generate_latex_from_form(with_rich, {}, {})
-        self.assertEqual(tex, generate_latex_from_form(without, {}, {}))
-        self.assertNotIn('segments', tex)
-        self.assertNotIn('"t"', tex)
-        self.assertEqual(docx_snapshot(generate_docx_from_form(with_rich, {}, {})),
-                         docx_snapshot(generate_docx_from_form(without, {}, {})))
+        tex, plain_tex = generate_latex_from_form(with_rich, {}, {}), generate_latex_from_form(without, {}, {})
+        changed = [(a, b) for a, b in zip(tex.splitlines(), plain_tex.splitlines()) if a != b]
+        self.assertEqual(len(tex.splitlines()), len(plain_tex.splitlines()))
+        self.assertEqual(changed, [
+            (r'Şekilden önceki \textit{italik} paragraf \textbf{(}\hyperlink{aiditor_ref_1}{\textbf{Yılmaz, 2020}}\textbf{)} ve CO\textsubscript{2}.',
+             r'Şekilden önceki italik paragraf (\hyperlink{aiditor_ref_1}{Yılmaz, 2020}) ve CO\textsubscript{2}.'),
+            (r'\textbf{Şekilden sonraki} paragraf.', 'Şekilden sonraki paragraf.'),
+        ])
+        for raw in ('segments', '"t"', '<b>', '**'):
+            self.assertNotIn(raw, tex)
+        rich_doc = Document(io.BytesIO(generate_docx_from_form(with_rich, {}, {})))
+        plain_doc = Document(io.BytesIO(generate_docx_from_form(without, {}, {})))
+        self.assertEqual([p.text for p in rich_doc.paragraphs], [p.text for p in plain_doc.paragraphs])
 
 
 class ExistingProjectStorageTests(unittest.TestCase):
