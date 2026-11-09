@@ -5,7 +5,9 @@ from collections import defaultdict
 YEAR = r'(?:18|19|20|21)\d{2}[a-z]?'
 # A citation ends where a word ends. Unicode superscripts (¹ ² ³ ⁰–⁹ ⁿ …) count as
 # word characters in Python regexes, yet after a year they are footnote markers.
-CITATION_END = r'(?![^\W²³¹⁰-ⁿ])'
+# Endnote markers are superscript Roman numerals (formatter.note_marker): ⁱ lies in
+# the U+2070–U+207F block, but ᵛ ˣ ˡ ᶜ ᵈ ᵐ do not, so they are listed explicitly.
+CITATION_END = r'(?![^\W²³¹⁰-ⁿᵛˣˡᶜᵈᵐ])'
 # APA reference authors use surname, initials. Full corporate names are supported too.
 AUTHOR = re.compile(r"(?:^|[,;&]\s*|\band\s+|\bve\s+)([^,;&\d]+?),\s*(?:[A-ZÇĞİÖŞÜ]\.(?:\s*[-–]?\s*[A-ZÇĞİÖŞÜ]\.)*)")
 

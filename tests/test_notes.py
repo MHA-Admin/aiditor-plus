@@ -22,7 +22,7 @@ from docx.oxml import parse_xml
 from docx.oxml.ns import nsdecls, qn
 
 import app as application
-from citation_links import citation_report
+from citation_links import CitationIndex, citation_report
 from docx_export import generate_docx_from_form
 from formatter import extract_form_data_from_docx, generate_latex_from_form, note_marker, roman_numeral
 from test_formatter_templates import sample_article
@@ -288,6 +288,104 @@ class ValidationTests(unittest.TestCase):
         section = self.section({'note': {'type': 'footnote', 'paragraphs': [r'\input{/etc/passwd} % & _']}})
         tex = generate_latex_from_form(_article([section]), {}, {})
         self.assertIn(r'Metin\footnote{\textbackslash{}input\{/etc/passwd\} \% \& \_}.', tex)
+
+
+class RomanEndnoteMarkerCitationTests(unittest.TestCase):
+    """2.5.0 fix: endnote markers ᵛ ˣ ˡ ᶜ ᵈ ᵐ after a year no longer block the citation link.
+
+    Only ⁱ lay in the exempted U+2070–U+207F block, so the 5th–8th, 10th–13th …
+    endnote references after "Yılmaz, 2020" dropped the link.
+    """
+
+    def _linked(self, text):
+        return [text[start:end] for start, end, _ in CitationIndex(REFERENCES).spans(text)]
+
+    def test_every_endnote_and_footnote_marker_keeps_the_link(self):
+        for kind in ('endnote', 'footnote'):
+            for number in (*range(1, 41), 49, 50, 90, 99, 100, 400, 500, 1000, 1999):
+                marker = note_marker(kind, number)
+                with self.subTest(kind=kind, number=number, marker=marker):
+                    self.assertEqual(self._linked(f'Yılmaz, 2020{marker} bunu göstermiştir.'), ['Yılmaz, 2020'])
+                    self.assertEqual(self._linked(f'Yılmaz (2020){marker} ve (Kaya & Demir, 2021{marker}).'),
+                                     ['Yılmaz (2020)', 'Kaya & Demir, 2021'])
+
+    def test_plain_letters_and_subscripts_still_end_no_citation(self):
+        for text in ('Yılmaz, 2020v', 'Yılmaz, 2020x', 'Yılmaz, 2020vi', 'Yılmaz, 2020ₓ', 'Yılmaz, 2020ᵃ'):
+            with self.subTest(text=text):
+                self.assertEqual(self._linked(text), [])
+
+    def test_link_does_not_swallow_the_marker(self):
+        text = 'Yılmaz, 2020ᵛⁱⁱⁱ; Kaya & Demir, 2021ˣˡ.'
+        tex = CitationIndex(REFERENCES).latex(text, lambda s: s)
+        self.assertEqual(tex, r'\hyperlink{aiditor_ref_1}{Yılmaz, 2020}ᵛⁱⁱⁱ; '
+                              r'\hyperlink{aiditor_ref_0}{Kaya & Demir, 2021}ˣˡ.')
+
+
+def reference_manager_manuscript():
+    """Zotero, EndNote and Mendeley citations each followed by a Word endnote numbered v, vi and x."""
+    from test_citation_sources import _fld, _run, content_control, zotero_field
+    document = Document()
+    _notes_part(document, 'endnote', {str(n): [t(f' Son not {n}.')] for n in range(1, 11)})
+    _front_matter(document, 'Son Not İşaretli Atıf Bağlantısı Deneme Başlığı')
+    p = document.add_paragraph('Önceki notlar')
+    for n in range(1, 5):
+        ref(p, 'endnote', n)
+    p.add_run(' burada.')
+    p = document.add_paragraph('Zotero atfı ')
+    zotero_field(p, 'Yılmaz, 2020')
+    ref(p, 'endnote', 5)
+    p.add_run(' ile; EndNote atfı ')
+    code = ' ADDIN EN.CITE <EndNote><Cite><Author>Kaya</Author><Year>2021</Year></Cite></EndNote>'
+    for node in (_fld('begin'), _run(code, 'w:instrText'), _fld('separate'), _run('Kaya & Demir, 2021'), _fld('end')):
+        p._p.append(node)
+    ref(p, 'endnote', 6)
+    p.add_run(' ile.')
+    p = document.add_paragraph('Ara notlar')
+    for n in range(7, 10):
+        ref(p, 'endnote', n)
+    p.add_run('; Mendeley atfı ')
+    content_control(p, 'Yılmaz (2020)')
+    ref(p, 'endnote', 10)
+    p.add_run(' ile biter.')
+    _references(document)
+    return document
+
+
+class ReferenceManagerEndnoteMarkerTests(unittest.TestCase):
+    def setUp(self):
+        self.data = _import(reference_manager_manuscript())
+        self.article = _article(self.data['sections'])
+
+    def test_import_keeps_citations_and_roman_markers(self):
+        content = self.data['sections'][0]['content']
+        self.assertIn('Zotero atfı Yılmaz, 2020ᵛ ile; EndNote atfı Kaya & Demir, 2021ᵛⁱ ile.', content)
+        self.assertIn('Mendeley atfı Yılmaz (2020)ˣ ile biter.', content)
+        self.assertNotIn('ADDIN', content)
+        self.assertEqual(self.data['stats']['endnote'], 10)
+
+    def test_all_three_citations_link(self):
+        self.assertEqual(citation_report(dict(self.data, references='\n'.join(REFERENCES)))['linked_in_body'], 3)
+
+    def test_latex_links_citation_and_endnote(self):
+        tex = generate_latex_from_form(self.article, {}, {})
+        self.assertIn(r'Zotero atfı \hyperlink{aiditor_ref_1}{Yılmaz, 2020}'
+                      r'\textsuperscript{\hyperlink{aiditor_endnote_5}{v}} ile; EndNote atfı '
+                      r'\hyperlink{aiditor_ref_0}{Kaya \& Demir, 2021}'
+                      r'\textsuperscript{\hyperlink{aiditor_endnote_6}{vi}} ile.', tex)
+        self.assertIn(r'Mendeley atfı \hyperlink{aiditor_ref_1}{Yılmaz (2020)}'
+                      r'\textsuperscript{\hyperlink{aiditor_endnote_10}{x}} ile biter.', tex)
+
+    def test_word_links_citations_and_keeps_native_endnotes(self):
+        blob = generate_docx_from_form(self.article, {}, {})
+        body = zipfile.ZipFile(io.BytesIO(blob)).read('word/document.xml').decode()
+        self.assertEqual(sorted(re.findall(r'w:anchor="(aiditor_ref_\d+)"', body)),
+                         ['aiditor_ref_0', 'aiditor_ref_1', 'aiditor_ref_1'])
+        self.assertEqual(len(re.findall(r'<w:endnoteReference w:id="\d+"/>', body)), 10)
+        for marker in ('ᵛ', 'ˣ'):
+            self.assertNotIn(marker, body)
+        again = extract_form_data_from_docx(blob)[0]
+        section = next(s for s in again['sections'] if 'Zotero' in s['content'])
+        self.assertTrue(section['content'].endswith(self.data['sections'][0]['content']))
 
 
 if __name__ == '__main__':
