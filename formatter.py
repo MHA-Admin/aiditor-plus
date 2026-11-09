@@ -32,6 +32,23 @@ _LATEX_ESCAPE = str.maketrans({
     '\\': r'\textbackslash{}',
 })
 
+# Non-digit characters of the Unicode "Superscripts and Subscripts" block
+# (U+2070–U+209F). The journal fonts (TeX Gyre, Latin Modern) have none of
+# them and Carlito only some, so XeLaTeX dropped them silently ("10⁻³"
+# printed as "10³"). Each becomes the same \textsuperscript/\textsubscript
+# command the digits use; the minus signs become \textminus (U+2212, present
+# in every journal font and defined for PDF bookmarks), so 10⁻³ keeps its
+# negative exponent and SO₄²⁻ its charge.
+_SCRIPT_SIGN_LATEX = {
+    **{char: r'\textsuperscript{' + latex + '}' for char, latex in zip(
+        '⁺⁻⁼⁽⁾ⁱⁿ', ('+', r'\textminus', '=', '(', ')', 'i', 'n'))},
+    **{char: r'\textsubscript{' + latex + '}' for char, latex in zip(
+        '₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜ',
+        ('+', r'\textminus', '=', '(', ')', 'a', 'e', 'o', 'x', 'ə', 'h', 'k', 'l', 'm', 'n', 'p', 's', 't'))},
+}
+_SCRIPT_SIGN_RE = re.compile('[' + ''.join(_SCRIPT_SIGN_LATEX) + ']')
+
+
 def escape(text: str) -> str:
     if not text:
         return ''
@@ -40,7 +57,7 @@ def escape(text: str) -> str:
         escaped = escaped.replace(subscript, rf'\textsubscript{{{digit}}}')
     for digit, superscript in enumerate('⁰¹²³⁴⁵⁶⁷⁸⁹'):
         escaped = escaped.replace(superscript, rf'\textsuperscript{{{digit}}}')
-    return escaped
+    return _SCRIPT_SIGN_RE.sub(lambda match: _SCRIPT_SIGN_LATEX[match.group()], escaped)
 
 
 _URL_RE = re.compile(r'https?://\S+', re.IGNORECASE)
