@@ -8,9 +8,12 @@ import threading
 from docx import Document
 from docx.enum.table import WD_TABLE_ALIGNMENT, WD_CELL_VERTICAL_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.oxml import OxmlElement
-from docx.oxml.ns import qn
-from docx.opc.constants import RELATIONSHIP_TYPE as RT
+from docx.oxml import OxmlElement, parse_xml
+from docx.oxml.ns import nsdecls, qn
+from docx.opc.constants import CONTENT_TYPE as CT, RELATIONSHIP_TYPE as RT
+from docx.opc.packuri import PackURI
+from docx.opc.part import XmlPart
+from docx.text.paragraph import Paragraph
 from docx.shared import Cm, Pt, RGBColor
 from PIL import Image
 
@@ -801,22 +804,95 @@ def _figure_or_table(doc, item, figures, english):
     _paragraph(doc, after=3, size=2)
 
 
-def _special_run(p, piece, special):
-    """Equation (Phase 1.5): the original Word OMML; plain text when it cannot be used."""
+class _NotesPartOwner:
+    """Minimal paragraph parent so note paragraphs resolve ``.part`` (URL relationships) to their notes part."""
+
+    def __init__(self, part):
+        self.part = part
+
+
+class _Notes:
+    """Native Word footnotes/endnotes (Phase 1.6); parts are added only when a note is written."""
+
+    PARTS = {'footnote': ('/word/footnotes.xml', CT.WML_FOOTNOTES, RT.FOOTNOTES, 'footnotes'),
+             'endnote': ('/word/endnotes.xml', CT.WML_ENDNOTES, RT.ENDNOTES, 'endnotes')}
+
+    def __init__(self, document, citations):
+        self.document, self.citations = document, citations
+        self.parts, self.next_id = {}, {'footnote': 1, 'endnote': 1}
+
+    def _part(self, kind):
+        if kind not in self.parts:
+            partname, content_type, relationship, root = self.PARTS[kind]
+            separators = ''.join(
+                f'<w:{kind} w:type="{kind_type}" w:id="{note_id}"><w:p><w:pPr><w:spacing w:after="0" w:line="240" '
+                f'w:lineRule="auto"/></w:pPr><w:r><w:{mark}/></w:r></w:p></w:{kind}>'
+                for kind_type, note_id, mark in (('separator', -1, 'separator'),
+                                                 ('continuationSeparator', 0, 'continuationSeparator')))
+            element = parse_xml(f'<w:{root} {nsdecls("w")}>{separators}</w:{root}>')
+            part = XmlPart(PackURI(partname), content_type, element, self.document.part.package)
+            self.document.part.relate_to(part, relationship)
+            self.parts[kind] = part
+        return self.parts[kind]
+
+    def add(self, p, note):
+        kind = note['type']
+        part = self._part(kind)
+        note_id = self.next_id[kind]
+        self.next_id[kind] += 1
+        element = _element(kind, id=note_id)
+        texts = [text for text in note['paragraphs'] if text.strip()] or ['']
+        for index, text in enumerate(texts):
+            paragraph = Paragraph(_element('p'), _NotesPartOwner(part))
+            fmt = paragraph.paragraph_format
+            fmt.space_before, fmt.space_after, fmt.line_spacing = Pt(0), Pt(2), 1.0
+            if index == 0:
+                mark = _element('r')
+                r_pr = _element('rPr'); r_pr.append(_element('vertAlign', val='superscript')); mark.append(r_pr)
+                mark.append(_element(kind + 'Ref'))
+                paragraph._p.append(mark)
+                text = ' ' + text
+            cursor = 0
+            for start, end, index_ in self.citations.spans(text):
+                _text(paragraph, text[cursor:start], size=NOTE_SIZE)
+                link = _element('hyperlink', anchor='aiditor_ref_' + str(index_), history='1')
+                link.append(_run(paragraph, text[start:end], size=NOTE_SIZE)._r)
+                paragraph._p.append(link)
+                cursor = end
+            _text(paragraph, text[cursor:], size=NOTE_SIZE)
+            element.append(paragraph._p)
+        part.element.append(element)
+        reference = _element('r')
+        r_pr = _element('rPr'); r_pr.append(_element('vertAlign', val='superscript')); reference.append(r_pr)
+        reference.append(_element(kind + 'Reference', id=note_id))
+        p._p.append(reference)
+
+
+NOTE_SIZE = 9
+
+
+def _special_run(p, piece, special, notes=None):
+    """Equation (Phase 1.5): the original Word OMML; note (Phase 1.6): a native footnote/endnote.
+
+    Plain text when the stored data cannot be used.
+    """
     if 'math' in special:
         node = safe_omml(special['math'].get('omml'))
         if node is not None:
             p._p.append(copy.deepcopy(node))
             return
+    if 'note' in special and notes is not None:
+        notes.add(p, special['note'])
+        return
     _text(p, piece)
 
 
-def _formatted_body_text(p, text, attrs, citations):
+def _formatted_body_text(p, text, attrs, citations, notes=None):
     """Body paragraph with partial bold/italic (Phase 1.4b); citation links keep their runs' formatting."""
     def write(start, end):
         for piece, bold, italic, special in formatted_runs(text, attrs, start, end):
             if special is not None:
-                _special_run(p, piece, special)
+                _special_run(p, piece, special, notes)
             else:
                 _text(p, piece, bold=bold, italic=italic)
 
@@ -837,6 +913,7 @@ def _body(doc, data, settings, figures):
     bilingual_panel = settings['template_id'] == 'bilingual_panel'
     refs = sorted([r.strip() for r in data.get('references', '').splitlines() if r.strip()], key=turkish_sort_key)
     citations = CitationIndex(refs, settings['link_citations'])
+    notes = _Notes(doc, citations)
     items = data.get('figtables', [])
     placed = set()
     for section in data.get('sections', []):
@@ -877,7 +954,7 @@ def _body(doc, data, settings, figures):
                         cursor = end
                     _text(p, para.strip()[cursor:])
                 else:
-                    _formatted_body_text(p, para.strip(), flags, citations)
+                    _formatted_body_text(p, para.strip(), flags, citations, notes)
                 for i, item in assigned:
                     anchor = item.get('after_para', '').strip()
                     if i not in placed and anchor and anchor.lower() in para.lower():

@@ -1038,10 +1038,10 @@ function updateRichNote(block) {
   }
   const lost = formatted.length - kept;
   const specials = formatted.some(entry => entry.segments.some(richSegmentIsSpecial));
-  const what = specials ? 'kalın/italik biçim ve denklemler' : 'kalın/italik biçim';
+  const what = specials ? 'kalın/italik biçim, denklemler ve dipnotlar' : 'kalın/italik biçim';
   let text = kept ? `Word’deki ${what} ${kept} paragrafta korunuyor ve çıktıya aktarılacak.` : '';
   if (lost) text += (text ? ' ' : '') + `${lost} paragraf değiştirildiği için o paragrafların kalın/italik biçimi artık uygulanmayacak; metin olduğu gibi kalır.` +
-    (specials ? ' Bu paragraflardaki denklemler, denklem metnine ve hemen yanındaki karakterlere dokunulmadıysa korunur.' : '');
+    (specials ? ' Bu paragraflardaki denklem ve dipnotlar, denklem metnine/dipnot işaretine (¹, ⁱ) ve hemen yanındaki karakterlere dokunulmadıysa korunur.' : '');
   note.dataset.state = lost ? 'partial' : 'kept';
   note.querySelector('span').textContent = text;
   note.hidden = false;

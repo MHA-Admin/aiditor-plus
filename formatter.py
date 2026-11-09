@@ -22,6 +22,7 @@ from page_furniture import page_value, revision_dates, short_authors
 from equations import M as OMML_NS, omml_display_latex, omml_latex, omml_linear, safe_omml, to_xml as omml_to_xml
 from docx import Document
 from docx.oxml.ns import qn
+from docx.opc.constants import RELATIONSHIP_TYPE as RT
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml.table import CT_Tbl
 from docx.oxml.text.paragraph import CT_P
@@ -46,7 +47,7 @@ _LATEX_ESCAPE = str.maketrans({
 # negative exponent and SO₄²⁻ its charge.
 _SCRIPT_SIGN_LATEX = {
     **{char: r'\textsuperscript{' + latex + '}' for char, latex in zip(
-        '⁺⁻⁼⁽⁾ⁱⁿ', ('+', r'\textminus', '=', '(', ')', 'i', 'n'))},
+        '⁺⁻⁼⁽⁾ⁱⁿᵛˣˡᶜᵈᵐ', ('+', r'\textminus', '=', '(', ')', 'i', 'n', 'v', 'x', 'l', 'c', 'd', 'm'))},
     **{char: r'\textsubscript{' + latex + '}' for char, latex in zip(
         '₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜ',
         ('+', r'\textminus', '=', '(', ')', 'a', 'e', 'o', 'x', 'ə', 'h', 'k', 'l', 'm', 'n', 'p', 's', 't'))},
@@ -313,6 +314,23 @@ _ImportReport.MESSAGES['equation_outside_body'] = (
 )
 
 
+_ImportReport.MESSAGES['footnote'] = (
+    "{count} Word dipnotu aktarıldı. Bölüm metninde üst simge numarasıyla (¹) görünür; LaTeX/PDF ve Word "
+    "çıktısında dipnot olarak yazılır."
+)
+_ImportReport.MESSAGES['endnote'] = (
+    "{count} Word son notu aktarıldı. Bölüm metninde üst simge Roma rakamıyla (ⁱ) görünür; Word çıktısında son "
+    "not, LaTeX/PDF çıktısında makale sonunda “Son Notlar” bölümü olarak yazılır."
+)
+_ImportReport.MESSAGES['note_outside_body'] = (
+    "{count} dipnot/son not makale gövdesi dışında (başlık, öz, kaynakça, tablo vb.) bulunduğu için çıktıya "
+    "not olarak aktarılamadı; işaret metinde kaldı. Not metinleri aşağıda listelendi."
+)
+_ImportReport.MESSAGES['missing_note'] = (
+    "{count} dipnot/son not başvurusunun metni Word dosyasında bulunamadı; bu başvurular atlandı."
+)
+
+
 _ON_OFF_FALSE = {'0', 'false', 'off'}
 
 
@@ -457,12 +475,25 @@ class _HiddenTextContext:
         self.equations: dict[object, int] = {}
         self.unconverted_equations: dict[object, int] = {}
         self.ole_equations: dict[object, int] = {}
+        # Phase 1.6: footnotes/endnotes read once; references per paragraph.
+        self.notes, self.note_numbers = _read_notes(document)
+        self.note_refs: dict[object, list[tuple[str, str]]] = {}
+        self.missing_notes: dict[object, int] = {}
 
     def total(self) -> int:
         return sum(self.pieces.values())
 
     def total_unconverted_scripts(self) -> int:
         return sum(self.unconverted_scripts.values())
+
+    def note_texts(self, key) -> list[str] | None:
+        """Paragraph texts of a note (read once; None when the note does not exist)."""
+        note = self.notes.get(key)
+        if note is None:
+            return None
+        if not isinstance(note, list):
+            note = self.notes[key] = _note_paragraph_texts(note) or ['']
+        return note
 
     def total_equations(self) -> tuple[int, int, int]:
         return (sum(self.equations.values()), sum(self.unconverted_equations.values()),
@@ -552,7 +583,8 @@ def _paragraph_text(paragraph, pieces: list | None = None) -> str:
     current_run = None
     paragraph_element = paragraph._p
     context = _HIDDEN_TEXT_CONTEXT.get()
-    equations = unconverted_equations = ole_equations = 0
+    equations = unconverted_equations = ole_equations = missing_notes = 0
+    note_refs: list[tuple[str, str]] = []
     hidden_pieces = 0
     previous_hidden = False
     unconverted_pieces = 0
@@ -566,7 +598,7 @@ def _paragraph_text(paragraph, pieces: list | None = None) -> str:
 
     def walk(node):
         nonlocal hidden_pieces, previous_hidden, unconverted_pieces, previous_unconverted, alignment, current_run
-        nonlocal equations, unconverted_equations, ole_equations
+        nonlocal equations, unconverted_equations, ole_equations, missing_notes
         for child in node:
             tag = child.tag
             if tag in _HIDDEN_TEXT_CONTAINERS:
@@ -586,6 +618,18 @@ def _paragraph_text(paragraph, pieces: list | None = None) -> str:
             if context is not None and tag == qn('w:object') and _is_ole_equation(child):
                 ole_equations += 1
                 emit(OLE_EQUATION_PLACEHOLDER)
+                continue
+            if context is not None and tag in _NOTE_REFERENCE_TAGS:
+                # Phase 1.6: the reference becomes its Word number as a
+                # superscript marker; the note text travels with it.
+                kind = _NOTE_REFERENCE_TAGS[tag]
+                key = (kind, child.get(qn('w:id')) or '')
+                note = context.note_texts(key)
+                if note is None:
+                    missing_notes += 1
+                    continue
+                note_refs.append(key)
+                emit(note_marker(kind, context.note_numbers.get(key, 0)), {'note': {'type': kind, 'paragraphs': list(note)}})
                 continue
             if tag == qn('w:sdt') and child.find(qn('w:sdtPr') + '/' + qn('w:showingPlcHdr')) is not None:
                 continue  # an empty content control still shows "Click here to enter text"
@@ -636,7 +680,73 @@ def _paragraph_text(paragraph, pieces: list | None = None) -> str:
         context.equations[paragraph_element] = equations
         context.unconverted_equations[paragraph_element] = unconverted_equations
         context.ole_equations[paragraph_element] = ole_equations
+        context.note_refs[paragraph_element] = note_refs
+        context.missing_notes[paragraph_element] = missing_notes
     return ''.join(parts)
+
+
+_NOTE_REFERENCE_TAGS = {qn('w:footnoteReference'): 'footnote', qn('w:endnoteReference'): 'endnote'}
+_ROMAN = (('m', 1000), ('cm', 900), ('d', 500), ('cd', 400), ('c', 100), ('xc', 90), ('l', 50), ('xl', 40),
+          ('x', 10), ('ix', 9), ('v', 5), ('iv', 4), ('i', 1))
+_SUPERSCRIPT_ROMAN = dict(zip('ivxlcdm', 'ⁱᵛˣˡᶜᵈᵐ'))
+MAX_NOTE_PARAGRAPHS = 50
+
+
+def roman_numeral(number: int) -> str:
+    result = ''
+    for letters, value in _ROMAN:
+        while number >= value:
+            result += letters
+            number -= value
+    return result
+
+
+def note_marker(kind: str, number: int) -> str:
+    """Visible marker of a note reference: ¹ for footnotes, ⁱ for endnotes (Word's default numbering)."""
+    if kind == 'endnote':
+        return ''.join(_SUPERSCRIPT_ROMAN[char] for char in roman_numeral(max(number, 1)))
+    return ''.join(_SUPERSCRIPT_CHARS[digit] for digit in str(max(number, 1)))
+
+
+def _read_notes(document) -> tuple[dict, dict]:
+    """Footnote/endnote texts by (kind, w:id) and their Word numbers in reference order.
+
+    Separator notes are skipped. Each note paragraph goes through the same
+    visible-text rules as the body (hidden text, citation fields, Unicode
+    sub/superscript). Numbering follows the order of references in the body.
+    """
+    notes: dict = {}
+    for kind, relationship in (('footnote', RT.FOOTNOTES), ('endnote', RT.ENDNOTES)):
+        try:
+            part = document.part.part_related_by(relationship)
+            root = part.element if hasattr(part, 'element') else etree.fromstring(part.blob, _NOTES_PARSER)
+        except (KeyError, etree.XMLSyntaxError, ValueError):
+            continue
+        for note in root.findall(qn('w:' + kind)):
+            if note.get(qn('w:type')) in ('separator', 'continuationSeparator', 'continuationNotice'):
+                continue
+            notes[(kind, note.get(qn('w:id')) or '')] = note
+    numbers: dict = {}
+    counters = {'footnote': 0, 'endnote': 0}
+    for reference in document.element.body.iter(*_NOTE_REFERENCE_TAGS):
+        kind = _NOTE_REFERENCE_TAGS[reference.tag]
+        key = (kind, reference.get(qn('w:id')) or '')
+        if key in notes and key not in numbers:
+            counters[kind] += 1
+            numbers[key] = counters[kind]
+    return notes, numbers
+
+
+_NOTES_PARSER = etree.XMLParser(resolve_entities=False, no_network=True, huge_tree=False)
+
+
+def _note_paragraph_texts(note_element) -> list[str]:
+    texts = []
+    for paragraph_element in note_element.findall(qn('w:p'))[:MAX_NOTE_PARAGRAPHS]:
+        text = _paragraph_text(Paragraph(paragraph_element, None)).strip()
+        if text:
+            texts.append(text)
+    return texts
 
 
 _OMML_MATH = '{%s}oMath' % OMML_NS
@@ -831,7 +941,7 @@ def _content_rich(content: str, entries: list[dict]) -> dict | None:
 # or a note (Phase 1.6): one unit that is never split, formatted or linked.
 _INLINE_URL_RE = re.compile(r'https?://\S+', re.IGNORECASE)
 _UNMATCHED = object()
-_SPECIAL_KEYS = ('math',)
+_SPECIAL_KEYS = ('math', 'note')
 _PLAIN_ATTRS = (False, False, None)
 
 
@@ -845,7 +955,11 @@ def _valid_special(segment) -> bool:
         value = segment['math']
         return (isinstance(value, dict) and set(value) <= {'display', 'omml'}
                 and isinstance(value.get('display', False), bool) and isinstance(value.get('omml'), str))
-    return False
+    value = segment['note']
+    return (isinstance(value, dict) and set(value) <= {'type', 'paragraphs'}
+            and value.get('type') in ('footnote', 'endnote') and isinstance(value.get('paragraphs'), list)
+            and 0 < len(value['paragraphs']) <= MAX_NOTE_PARAGRAPHS
+            and all(isinstance(text, str) for text in value['paragraphs']))
 
 
 def _valid_rich_entry(entry) -> bool:
@@ -1000,11 +1114,39 @@ def math_latex(special: dict) -> str | None:
     return (r'\[' + inner + r'\]') if special.get('display') else (r'\(' + inner + r'\)')
 
 
+def _latex_note_text(note: dict, citations, escape_text) -> str:
+    texts = [text for text in note['paragraphs'] if text.strip()]
+    if citations is None:
+        return r'\par '.join(escape_text(text) for text in texts)
+    return r'\par '.join(citations.latex(text, escape_text) for text in texts)
+
+
 def _latex_special(piece: str, special: dict, escape_text, state) -> str:
     if 'math' in special:
         latex = math_latex(special['math'])
         return latex if latex is not None else escape_text(piece)
-    return escape_text(piece)
+    note = special['note']
+    state = state if state is not None else {}
+    citations = state.get('citations')
+    if note['type'] == 'footnote':
+        return r'\footnote{' + _latex_note_text(note, citations, escape_text) + '}'
+    endnotes = state.setdefault('endnotes', [])
+    endnotes.append(_latex_note_text(note, citations, escape_text))
+    number = len(endnotes)
+    return (r'\textsuperscript{\hyperlink{aiditor_endnote_' + str(number) + '}{' + roman_numeral(number) + '}}')
+
+
+def latex_endnotes(state: dict, english_only: bool) -> list[str]:
+    """Endnotes of the body (Phase 1.6) as a section after the body, linked from their markers."""
+    endnotes = state.get('endnotes') or []
+    if not endnotes:
+        return []
+    lines = [r'\section*{' + ('Endnotes' if english_only else 'Son Notlar / Endnotes') + '}', '',
+             r'\begin{list}{}{\setlength{\leftmargin}{1.6em}\setlength{\labelwidth}{1.4em}}']
+    for number, text in enumerate(endnotes, start=1):
+        lines.append(r'\item[\hypertarget{aiditor_endnote_' + str(number) + '}{}' + roman_numeral(number) + '.] ' + text)
+    lines.extend([r'\end{list}', ''])
+    return lines
 
 
 def _latex_formatted(text: str, attrs, start: int, end: int, escape_text, state=None) -> str:
@@ -1953,7 +2095,7 @@ def _extract_form_data(document: Document, hidden_text: _HiddenTextContext) -> t
 
     def create_section(name: str, level: int = 1) -> dict:
         section = {'id': str(len(result['sections'])), 'name': name, 'level': str(max(1, min(level, 3))),
-                   '_paragraphs': [], '_rich': []}
+                   '_paragraphs': [], '_rich': [], '_elements': []}
         result['sections'].append(section)
         return section
 
@@ -2126,12 +2268,16 @@ def _extract_form_data(document: Document, hidden_text: _HiddenTextContext) -> t
             paragraph_text = list_prefix + text
             current_section['_paragraphs'].append(paragraph_text)
             current_section['_rich'].extend(_rich_paragraph_entries(block['paragraph'], text, list_prefix))
+            current_section['_elements'].append(block['paragraph']._p)
 
+    rich_elements = set()
     for section in result['sections']:
         section['content'] = '\n\n'.join(section.pop('_paragraphs'))
         content_rich = _content_rich(section['content'], section.pop('_rich'))
+        elements = section.pop('_elements')
         if content_rich is not None:
             section['content_rich'] = content_rich
+            rich_elements.update(elements)
 
     # If no headings exist at all, retain unclaimed prose as a generic body
     # instead of mistaking it for a template section or silently dropping it.
@@ -2153,6 +2299,8 @@ def _extract_form_data(document: Document, hidden_text: _HiddenTextContext) -> t
         ])
         if content_rich is not None:
             body_section['content_rich'] = content_rich
+            rich_elements.update(candidate_paragraph._p for candidate_index, _, candidate_paragraph in front_candidates
+                                 if candidate_index not in consumed_front_candidates)
         result['sections'].append(body_section)
     result['references'] = '\n'.join(references)
 
@@ -2186,8 +2334,22 @@ def _extract_form_data(document: Document, hidden_text: _HiddenTextContext) -> t
         report.add('unconverted_equation', unconverted_equations)
     if ole_equations:
         report.add('ole_equation', ole_equations)
+    outside_notes = []
+    for element, references in hidden_text.note_refs.items():
+        for kind, note_id in references:
+            report.add(kind)
+            if element not in rich_elements:
+                outside_notes.append(' '.join(hidden_text.note_texts((kind, note_id))))
+    if outside_notes:
+        report.add('note_outside_body', len(outside_notes))
+    missing_notes = sum(hidden_text.missing_notes.values())
+    if missing_notes:
+        report.add('missing_note', missing_notes)
     # Empty unless an import phase counted changed or unconvertible content.
     result['warnings'].extend(report.warnings())
+    for text in outside_notes:
+        excerpt = text if len(text) <= 160 else text[:157].rstrip() + '…'
+        result['warnings'].append('Aktarılamayan not metni: “' + excerpt + '”')
     result['stats'].update(report.stats())
     return result, images
 
@@ -3432,7 +3594,7 @@ def generate_latex_from_form(data: dict, figure_file_bytes: dict,
 
     # ── Body sections + paragraph-level figure/table placement ──
     body_lines = []
-    rich_state = {}   # shared by body paragraphs (Phase 1.6 endnotes)
+    rich_state = {'citations': citations}   # shared by body paragraphs (Phase 1.6 notes)
     placed_ft_ids = set()   # track which fts have already been placed
 
     for sec in sections:
@@ -3508,6 +3670,8 @@ def generate_latex_from_form(data: dict, figure_file_bytes: dict,
             r'% Article body goes here' if english_only else r'% Makale metni buraya gelecek / Article body goes here',
             '',
         ]
+
+    body_lines.extend(latex_endnotes(rich_state, english_only))
 
     # ── Figures/tables with no section assigned (end of body) ──
     orphan_fts = [

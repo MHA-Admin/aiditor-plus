@@ -30,7 +30,7 @@ from citation_links import citation_report
 from page_furniture import TOKENS, RUNNING_DEFAULTS
 from docx_export import generate_docx_from_form, DOCX_MIME
 from equations import safe_omml
-from formatter import CONTENT_RICH_VERSION, generate_latex_from_form, extract_form_data_from_docx, _normalize_table_model
+from formatter import CONTENT_RICH_VERSION, MAX_NOTE_PARAGRAPHS, generate_latex_from_form, extract_form_data_from_docx, _normalize_table_model
 
 APP_VERSION = '2.4.2'
 
@@ -134,12 +134,17 @@ def _validate_content_rich(rich):
                 or not isinstance(entry.get('segments'), list) or len(entry['segments']) > CONTENT_RICH_LIMITS['segments']):
             raise ValueError('Bölüm biçim bilgisi geçersiz veya çok büyük.')
         for segment in entry['segments']:
-            if (not isinstance(segment, dict) or set(segment) - {'t', 'b', 'i', 'math'} or not isinstance(segment.get('t'), str)
+            if (not isinstance(segment, dict) or set(segment) - {'t', 'b', 'i', 'math', 'note'} or not isinstance(segment.get('t'), str)
                     or len(segment['t']) > CONTENT_RICH_LIMITS['plain']
                     or any(not isinstance(segment[key], bool) for key in ('b', 'i') if key in segment)):
                 raise ValueError('Bölüm biçim bilgisi geçersiz.')
             if 'math' in segment:
                 _validate_equation(segment['math'])
+            if 'note' in segment:
+                _validate_note(segment['note'])
+            if sum(key in segment for key in ('math', 'note')) > 1 or (
+                    ('math' in segment or 'note' in segment) and ('b' in segment or 'i' in segment)):
+                raise ValueError('Bölüm biçim bilgisi geçersiz.')
 
 
 def _validate_equation(value):
@@ -147,6 +152,15 @@ def _validate_equation(value):
     if (not isinstance(value, dict) or set(value) - {'display', 'omml'}
             or not isinstance(value.get('display', False), bool) or safe_omml(value.get('omml')) is None):
         raise ValueError('Bölümdeki denklem verisi geçersiz.')
+
+
+def _validate_note(value):
+    """A stored Word footnote/endnote (Phase 1.6): its type and paragraph texts."""
+    if (not isinstance(value, dict) or set(value) - {'type', 'paragraphs'}
+            or value.get('type') not in ('footnote', 'endnote') or not isinstance(value.get('paragraphs'), list)
+            or not 0 < len(value['paragraphs']) <= MAX_NOTE_PARAGRAPHS
+            or any(not isinstance(text, str) or len(text) > CONTENT_RICH_LIMITS['plain'] for text in value['paragraphs'])):
+        raise ValueError('Bölümdeki dipnot verisi geçersiz.')
 
 
 def validate_form(data, draft=False):
