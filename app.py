@@ -29,7 +29,7 @@ from journal_templates import TEMPLATES, default_settings, normalize_settings
 from citation_links import citation_report
 from page_furniture import TOKENS, RUNNING_DEFAULTS
 from docx_export import generate_docx_from_form, DOCX_MIME
-from formatter import generate_latex_from_form, extract_form_data_from_docx, _normalize_table_model
+from formatter import CONTENT_RICH_VERSION, generate_latex_from_form, extract_form_data_from_docx, _normalize_table_model
 
 APP_VERSION = '2.4.2'
 
@@ -105,6 +105,40 @@ def read_docx(upload):
     return blob
 
 
+# Saved projects: version 1 has plain-text sections only; version 2 is written
+# when a section carries content_rich (Phase 1.4c), so earlier releases refuse
+# the file instead of silently dropping the formatting on their next save.
+PROJECT_VERSIONS = {1, 2}
+CONTENT_RICH_LIMITS = {'paragraphs': 10000, 'segments': 5000, 'plain': 200000}
+
+
+def _validate_content_rich(rich):
+    """Structure and size of a section's optional inline formatting (Phase 1.4).
+
+    Content mismatches (a stored paragraph that no longer matches the text)
+    are allowed: output ignores such entries. Wrong types, unknown keys,
+    oversized data and an unknown format version are rejected so formatting
+    is never dropped or misread without the user knowing.
+    """
+    if not isinstance(rich, dict) or set(rich) - {'version', 'paragraphs'}:
+        raise ValueError('Bölüm biçim bilgisi geçersiz.')
+    if type(rich.get('version')) is not int or rich['version'] != CONTENT_RICH_VERSION:
+        raise ValueError('Bölüm biçim bilgisi bu sürümde desteklenmiyor; AI-ditor Plus’ı güncelleyin.')
+    paragraphs = rich.get('paragraphs')
+    if not isinstance(paragraphs, list) or len(paragraphs) > CONTENT_RICH_LIMITS['paragraphs']:
+        raise ValueError('Bölüm biçim bilgisi geçersiz veya çok büyük.')
+    for entry in paragraphs:
+        if (not isinstance(entry, dict) or set(entry) - {'plain', 'segments'}
+                or not isinstance(entry.get('plain'), str) or len(entry['plain']) > CONTENT_RICH_LIMITS['plain']
+                or not isinstance(entry.get('segments'), list) or len(entry['segments']) > CONTENT_RICH_LIMITS['segments']):
+            raise ValueError('Bölüm biçim bilgisi geçersiz veya çok büyük.')
+        for segment in entry['segments']:
+            if (not isinstance(segment, dict) or set(segment) - {'t', 'b', 'i'} or not isinstance(segment.get('t'), str)
+                    or len(segment['t']) > CONTENT_RICH_LIMITS['plain']
+                    or any(not isinstance(segment[key], bool) for key in ('b', 'i') if key in segment)):
+                raise ValueError('Bölüm biçim bilgisi geçersiz.')
+
+
 def validate_form(data, draft=False):
     if not isinstance(data, dict):
         raise ValueError('Form verisi bir JSON nesnesi olmalıdır.')
@@ -136,6 +170,8 @@ def validate_form(data, draft=False):
         if str(section.get('level', '1')) not in {'1', '2', '3'}:
             raise ValueError('Bölüm düzeyi 1, 2 veya 3 olmalıdır.')
         section['level'] = str(section.get('level', '1'))
+        if 'content_rich' in section:
+            _validate_content_rich(section['content_rich'])
         sid = section.get('id')
         if sid is not None:
             if not isinstance(sid, (str, int)) or isinstance(sid, bool) or str(sid) in section_ids:
@@ -287,7 +323,7 @@ def read_figure_files():
 
 
 def validate_draft_project(project):
-    if not isinstance(project, dict) or project.get('format') not in {'aiditor-project', 'jgttr-project'} or type(project.get('version')) is not int or project['version'] != 1:
+    if not isinstance(project, dict) or project.get('format') not in {'aiditor-project', 'jgttr-project'} or type(project.get('version')) is not int or project['version'] not in PROJECT_VERSIONS:
         raise ValueError('Bu dosya desteklenen bir makale projesi değil.')
     data = project.get('data')
     if not isinstance(data, dict) or any(key not in data for key in ('cover', 'abstract', 'authors', 'sections', 'figtables')):

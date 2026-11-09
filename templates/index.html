@@ -958,6 +958,7 @@ function addSection(d = {}) {
                 placeholder="Bölüm içeriğini buraya yazın...">${esc(d.content || '')}</textarea>
       <div class="paste-note"><i class="bi bi-clipboard-check"></i><span>Word'den metin ve tabloları birlikte buraya yapıştırabilirsiniz; tablolar metindeki sırasına göre otomatik eklenir.</span></div>
     </div>`;
+  div.contentRich = normalizeContentRich(d.content_rich);
   list.appendChild(div);
   initSectionDrag(div);
   div.querySelector('[data-f="content"]').addEventListener('paste', e => handleSectionPaste(e, uid));
@@ -982,13 +983,42 @@ function removeSection(id) {
   updateSectionDropdowns();
 }
 
+// Inline formatting imported from Word (Phase 1.4). The textarea keeps the
+// plain text; content_rich travels beside it and output applies it only to
+// paragraphs whose text is unchanged. Entries whose paragraph text no longer
+// occurs in the section are dropped when the section is collected.
+function normalizeContentRich(rich) {
+  if (!rich || typeof rich !== 'object' || rich.version !== 1 || !Array.isArray(rich.paragraphs)) return null;
+  const paragraphs = rich.paragraphs.filter(entry => entry && typeof entry.plain === 'string' && entry.plain &&
+    Array.isArray(entry.segments) && entry.segments.length &&
+    entry.segments.every(segment => segment && typeof segment.t === 'string') &&
+    entry.segments.map(segment => segment.t).join('') === entry.plain);
+  return paragraphs.length ? {version: 1, paragraphs: structuredClone(paragraphs)} : null;
+}
+
+function richEntryIsFormatted(entry) {
+  return entry.segments.some(segment => segment.b === true || segment.i === true);
+}
+
+function currentContentRich(block, content) {
+  const rich = block.contentRich;
+  if (!rich) return null;
+  const paragraphs = rich.paragraphs.filter(entry => content.includes(entry.plain));
+  return paragraphs.some(richEntryIsFormatted) ? {version: 1, paragraphs} : null;
+}
+
 function collectSections() {
-  return [...document.querySelectorAll('#sections-list .sec-block')].map(b => ({
-    id: b.dataset.sectionUid,
-    name:    b.querySelector('[data-f="name"]').value.trim(),
-    level:   b.querySelector('[data-f="level"]').value,
-    content: b.querySelector('[data-f="content"]').value.trim(),
-  }));
+  return [...document.querySelectorAll('#sections-list .sec-block')].map(b => {
+    const section = {
+      id: b.dataset.sectionUid,
+      name:    b.querySelector('[data-f="name"]').value.trim(),
+      level:   b.querySelector('[data-f="level"]').value,
+      content: b.querySelector('[data-f="content"]').value.trim(),
+    };
+    const rich = currentContentRich(b, section.content);
+    if (rich) section.content_rich = rich;
+    return section;
+  });
 }
 
 function sectionNameForUid(uid) {
