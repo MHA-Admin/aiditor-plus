@@ -1,0 +1,134 @@
+{
+  "data": {
+    "abstract": {
+      "en_abs": "",
+      "en_kw": "",
+      "tr_abs": "Bu çalışma bilimsel içeriğin Word dosyasından dergi çıktısına kayıpsız aktarımını örnek bir metin ile değerlendirmek için hazırlanmıştır.",
+      "tr_kw": "denklem; dipnot; biçim"
+    },
+    "cover": {
+      "en_title": "",
+      "tr_title": "Bilimsel İçerik Uçtan Uca Deneme Başlığı"
+    },
+    "extra": {
+      "ack": "",
+      "conflict": "",
+      "contrib": ""
+    },
+    "figtables": [],
+    "references": "Kaya, B., & Demir, C. (2021). Çevrim içi görünürlük. Örnek Dergi, 5(1), 20–34.\nYılmaz, A. (2020). Kırsal kalkınma ve turizm. Örnek Yayınevi.",
+    "sections": [
+      {
+        "content": "Tür Homo sapiens için önemli bulgu (Yılmaz, 2020) ile desteklenir¹.\n\nEnerji E=mc² ilişkisi ve CO₂ ile 10⁻³ değerleri (Kaya & Demir, 2021) ile karşılaştırıldıⁱ.\n\n(a+b)/2\n\nBasit alan (Yılmaz, 2020) ve EndNote alanı (Kaya & Demir, 2021) son paragrafta yer alır.",
+        "content_rich": {
+          "paragraphs": [
+            {
+              "plain": "Tür Homo sapiens için önemli bulgu (Yılmaz, 2020) ile desteklenir¹.",
+              "segments": [
+                {
+                  "t": "Tür "
+                },
+                {
+                  "i": true,
+                  "t": "Homo sapiens"
+                },
+                {
+                  "t": " için "
+                },
+                {
+                  "b": true,
+                  "t": "önemli"
+                },
+                {
+                  "t": " bulgu (Yılmaz, 2020) ile desteklenir"
+                },
+                {
+                  "note": {
+                    "paragraphs": [
+                      "Veriler 2024 saha çalışmasından alınmıştır."
+                    ],
+                    "type": "footnote"
+                  },
+                  "t": "¹"
+                },
+                {
+                  "t": "."
+                }
+              ]
+            },
+            {
+              "plain": "Enerji E=mc² ilişkisi ve CO₂ ile 10⁻³ değerleri (Kaya & Demir, 2021) ile karşılaştırıldıⁱ.",
+              "segments": [
+                {
+                  "t": "Enerji "
+                },
+                {
+                  "math": {
+                    "display": false,
+                    "omml": "<m:oMath xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\"><m:r><m:t xml:space=\"preserve\">E=m</m:t></m:r><m:sSup><m:e><m:r><m:t xml:space=\"preserve\">c</m:t></m:r></m:e><m:sup><m:r><m:t xml:space=\"preserve\">2</m:t></m:r></m:sup></m:sSup></m:oMath>"
+                  },
+                  "t": "E=mc²"
+                },
+                {
+                  "t": " ilişkisi ve CO₂ ile 10⁻³ değerleri (Kaya & Demir, 2021) ile karşılaştırıldı"
+                },
+                {
+                  "note": {
+                    "paragraphs": [
+                      "Ölçüm protokolü ekte verilmiştir."
+                    ],
+                    "type": "endnote"
+                  },
+                  "t": "ⁱ"
+                },
+                {
+                  "t": "."
+                }
+              ]
+            },
+            {
+              "plain": "(a+b)/2",
+              "segments": [
+                {
+                  "math": {
+                    "display": true,
+                    "omml": "<m:oMathPara xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\"><m:oMath><m:f><m:num><m:r><m:t xml:space=\"preserve\">a+b</m:t></m:r></m:num><m:den><m:r><m:t xml:space=\"preserve\">2</m:t></m:r></m:den></m:f></m:oMath></m:oMathPara>"
+                  },
+                  "t": "(a+b)/2"
+                }
+              ]
+            },
+            {
+              "plain": "Basit alan (Yılmaz, 2020) ve EndNote alanı (Kaya & Demir, 2021) son paragrafta yer alır.",
+              "segments": [
+                {
+                  "t": "Basit alan (Yılmaz, 2020) ve EndNote alanı (Kaya & Demir, 2021) son paragrafta yer alır."
+                }
+              ]
+            }
+          ],
+          "version": 1
+        },
+        "id": "0",
+        "level": "1",
+        "name": "Giriş"
+      }
+    ],
+    "stats": {
+      "endnote": 1,
+      "equation": 2,
+      "figures": 0,
+      "footnote": 1,
+      "references": 2,
+      "sections": 1,
+      "tables": 0
+    },
+    "warnings": [
+      "Yazar, tarih, DOI ve sayı bilgileri Word dosyasından güvenilir biçimde çıkarılamadığı için mevcut alanlar korundu.",
+      "2 Word denklemi aktarıldı. Word çıktısında özgün denklem yapısı korunur, LaTeX/PDF çıktısında denkleme dönüştürülür; bölüm metin kutusunda doğrusal yazımla görünür. Denklemleri çıktıda kontrol edin.",
+      "1 Word dipnotu aktarıldı. Bölüm metninde üst simge numarasıyla (¹) görünür; LaTeX/PDF ve Word çıktısında dipnot olarak yazılır.",
+      "1 Word son notu aktarıldı. Bölüm metninde üst simge Roma rakamıyla (ⁱ) görünür; Word çıktısında son not, LaTeX/PDF çıktısında makale sonunda “Son Notlar” bölümü olarak yazılır."
+    ]
+  },
+  "images": 0
+}

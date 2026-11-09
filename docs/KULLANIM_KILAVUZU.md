@@ -2,12 +2,13 @@
 
 <img src="../static/brand.svg" alt="AI-ditor Plus A+ logosu" width="88" height="88">
 
-**Sürüm 2.4.2 için hazırlanmıştır.** Bu kılavuz, AI-ditor Plus'ı ilk kez kullanacak bir dergi editörünün kurulumdan Word/PDF çıktısına kadar bütün adımları tek başına tamamlayabilmesi için yazılmıştır. Ekran görüntüleri doğrudan uygulamadan alınmıştır; içlerindeki dergi, yazar, logo ve makale bilgileri **tamamen kurgusaldır**.
+**Sürüm 2.5.0 için hazırlanmıştır.** Bu kılavuz, AI-ditor Plus'ı ilk kez kullanacak bir dergi editörünün kurulumdan Word/PDF çıktısına kadar bütün adımları tek başına tamamlayabilmesi için yazılmıştır. Ekran görüntüleri doğrudan uygulamadan alınmıştır; içlerindeki dergi, yazar, logo ve makale bilgileri **tamamen kurgusaldır**.
 
 ---
 
 ## İçindekiler
 
+- [2.5 sürümünde neler yeni?](#25-sürümünde-neler-yeni)
 - [2.4 sürümünde neler yeni?](#24-sürümünde-neler-yeni)
 1. [AI-ditor Plus nedir?](#1-ai-ditor-plus-nedir)
 2. [Kurulum](#2-kurulum)
@@ -21,6 +22,17 @@
 10. [Yayın öncesi kontrol listesi](#10-yayın-öncesi-kontrol-listesi)
 
 ---
+
+## 2.5 sürümünde neler yeni?
+
+Bu sürüm, Word'den aktarılan bilimsel makalelerde içerik kaybını giderir. Dergi şablonları ve mizanpaj ayarları değişmedi.
+
+| Yenilik | Ayrıntı |
+| --- | --- |
+| **Kısmi kalın/italik:** Gövde paragraflarındaki kalın, italik ve kalın-italik sözcükler Word ve PDF çıktısında korunur. | [6.6 Makale bölümleri](#66-makale-bölümleri-4) |
+| **Denklemler:** Word denklemleri Word çıktısına özgün yapısıyla, PDF'e denklem olarak aktarılır. | [6.2 Word içe aktarma](#62-word-makalesini-içe-aktarma) |
+| **Dipnot ve son notlar:** Numara, konum ve metinleriyle aktarılır; türleri korunur. | [6.2](#62-word-makalesini-içe-aktarma) |
+| **Proje sürümü 2:** Biçimli makaleler yeni proje sürümüyle kaydedilir; eski sürümler bu dosyaları açmaz. | [8. Yedekleme](#8-yedekleme-ve-başka-bilgisayara-taşıma) |
 
 ## 2.4 sürümünde neler yeni?
 
@@ -335,6 +347,13 @@ Uygulama başlıkları, Türkçe/İngilizce özetleri ve anahtar kelimeleri, bö
 
 **Aktarılmayan bilgiler:** Yazar, tarih, DOI, cilt/sayı gibi künye bilgileri Word dosyalarında standart bir yerde bulunmadığı için güvenilir biçimde çıkarılamaz. Bu alanlar boş kalır veya mevcut değerleri korunur; bunları sonraki adımlarda elle girersiniz. Resim olarak çizilmiş tablolar, Word şekilleri ve metin kutuları da her belgede aktarılamayabilir.
 
+**Bilimsel içerik (2.5 ve sonrası):**
+
+- **Kalın/italik:** Gövde paragraflarındaki kısmi kalın, italik ve kalın-italik biçimler korunur. Metin kutusunda düz metin görünür; biçim bilgisi ayrıca saklanır ve çıktıya uygulanır.
+- **Denklemler:** Word denklemleri metin kutusunda doğrusal yazımla görünür (ör. `E=mc²`, `(a+b)/2`). Word çıktısında özgün denklem, PDF'te dizgilenmiş denklem olarak yer alır. LaTeX'e güvenle çevrilemeyen denklemler PDF'te doğrusal metin olarak yazılır ve aktarım özetinde bildirilir. Eski tip *Equation Editor/MathType* nesneleri dönüştürülemez; metinde “[Denklem: Word nesnesi dönüştürülemedi]” yer tutucusu kalır. Bu denklemleri Word'de yeni denklem biçimine çevirip dosyayı yeniden aktarın.
+- **Dipnot ve son notlar:** Metin kutusunda dipnotlar ¹ ², son notlar ⁱ ⁱⁱ işaretiyle görünür. Word çıktısında gerçek dipnot/son not, PDF'te sayfa altı dipnotu ve makale sonunda “Son Notlar” bölümü oluşur. Başlık, öz, kaynakça veya tablodaki notlar çıktıya not olarak aktarılamaz; metinleri aktarım özetinde listelenir.
+- Aktarım özeti, aktarılan ve dönüştürülemeyen denklem ile not sayılarını gösterir; bu uyarıları çıktıdan önce kontrol edin.
+
 > **İpucu:** Word dosyasında bölüm başlıkları için Word'ün *Başlık 1/2/3* stillerini, makale başlığı için *Konu Başlığı* stilini kullanmak aktarımın doğruluğunu artırır. Özet bölümlerinin “Öz/Özet” ve “Abstract” başlıklarıyla, anahtar kelime satırlarının “Anahtar Kelimeler:” ve “Keywords:” ifadeleriyle başlaması da aktarımı kolaylaştırır.
 
 İçe aktarmadan sonra aşağıdaki yedi bölümü sırayla kontrol edin. Her bölümün başlığına tıklayarak bölümü açıp kapatabilirsiniz.
@@ -388,6 +407,7 @@ Her bölüm bir başlık, bir düzey ve bir metin alanından oluşur.
 - **Düzey:** *Ana Bölüm*, *Alt Bölüm* veya *Alt-Alt* bölüm. Başlık numaralandırması ve büyüklüğü buna göre oluşturulur.
 - **Sıralama:** Soldaki tutamaç simgesinden (⋮⋮) tutup sürükleyin. Klavye kullanıyorsanız tutamaca odaklanıp **↑ / ↓** tuşlarıyla taşıyın. Şekil ve tablo bağlantıları bölüm adı veya sırası değişse de korunur.
 - **Paragraflar:** Paragrafları boş bir satırla ayırın.
+- **Biçim notu (2.5):** Word'den kalın/italik, denklem veya dipnot gelen bölümlerde metin kutusunun altında yeşil bir not görünür. Bir paragrafı değiştirdiğinizde not sarıya döner ve o paragrafın kalın/italik biçiminin artık uygulanmayacağını bildirir; metin olduğu gibi kalır. Denklem metnine, dipnot işaretine (¹, ⁱ) ve hemen yanlarındaki karakterlere dokunmadıysanız denklem ve dipnot korunur. Diğer paragrafların biçimi etkilenmez.
 - **Word'den yapıştırma:** Bir metin alanına Word'den kopyaladığınız metin ve tabloları birlikte yapıştırabilirsiniz; tablolar metindeki sırasına göre otomatik olarak *Şekil ve Tablolar* bölümüne eklenir.
 - **Bölüm Ekle** yeni bölüm açar; çöp kutusu simgesi bölümü siler.
 
@@ -489,6 +509,10 @@ Hesaplar, dergi ayarları ve makaleler **yalnızca bu bilgisayarda**, uygulaman�
 - **Dergi ayarları:** *Dergi tasarımı ve ayarları* sekmesinde **Dergi ayarlarını yedekle** ([5.7](#57-dergi-ayarlarını-yedekleme)).
 - **Her makale:** Düzenleyicinin altındaki **Makale JSON yedeği al** düğmesi. Yedek; kapak bilgileri, yazarlar, bölümler, tablolar ve şekil dosyalarını içerir. Eksik bıraktığınız alanlar da olduğu gibi saklanır.
 - **Tam yedek:** Uygulama kapalıyken yukarıdaki veri klasörünün tamamını kopyalayın.
+
+### Proje sürümleri ve eski uygulama sürümleri
+
+Kalın/italik, denklem veya dipnot içeren makaleler 2.5 ile **proje sürümü 2** olarak kaydedilir; bu bilgileri içermeyen makaleler sürüm 1 olarak kalır. 2.5, her iki sürümü açar. 2.4.x ve öncesi sürüm 2 JSON yedeklerini açmaz; bu, biçim, denklem ve not bilgisinin eski sürümde fark edilmeden silinmesini önler. Uygulamayı eski bir sürüme geri döndürmeniz gerekirse önce makalelerin JSON yedeğini alın: eski sürüm arşivdeki biçimli bir makaleyi açıp kaydederse metin korunur ama biçim, denklem ve not bilgisi kaybolur.
 
 ### Başka bilgisayara geçiş
 

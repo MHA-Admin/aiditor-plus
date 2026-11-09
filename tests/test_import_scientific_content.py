@@ -126,18 +126,6 @@ class ScientificImportChecks(unittest.TestCase):
         self.assertEqual(len(list(index.spans('Yılmaz, 2020¹ bunu göstermiştir.'))), 1)
 
 
-class KnownScientificImportGaps(ScientificImportChecks):
-    """Documented 2.4.2 losses (teknik analiz Ç3). These must start failing once fixed."""
-
-    def test_gap_equations_are_silently_removed(self):
-        with self.assertRaises(AssertionError):
-            self.check_equations_are_never_silently_removed()
-
-    def test_gap_footnotes_are_dropped(self):
-        with self.assertRaises(AssertionError):
-            self.check_footnote_text_and_reference_are_kept()
-
-
 class ClosedScientificImportGaps(ScientificImportChecks):
     """Gaps closed in Phase 1; each was a `test_gap_*` test in Phase 0."""
 
@@ -149,6 +137,12 @@ class ClosedScientificImportGaps(ScientificImportChecks):
 
     def test_superscript_and_subscript_are_preserved(self):  # Phase 1.3
         self.check_superscript_and_subscript_are_preserved()
+
+    def test_equations_are_never_silently_removed(self):  # Phase 1.5
+        self.check_equations_are_never_silently_removed()
+
+    def test_footnote_text_and_reference_are_kept(self):  # Phase 1.6
+        self.check_footnote_text_and_reference_are_kept()
 
 
 class CitationEndTests(unittest.TestCase):

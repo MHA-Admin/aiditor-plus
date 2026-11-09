@@ -228,6 +228,8 @@ textarea { resize:vertical; }
   border-radius:7px; background:#f7fafc; color:#687584; font-size:.73rem;
 }
 .paste-status { color:#176b3a; font-weight:600; }
+.rich-note { background:#eef5ef; color:#2f5a45; }
+.rich-note[data-state="partial"] { background:#fff6e5; color:#7a4b12; }
 .app-toast {
   position:fixed; z-index:1080; right:22px; bottom:22px; max-width:390px;
   padding:11px 14px; border-radius:12px; color:#fff; background:var(--teal-dark);
@@ -956,11 +958,15 @@ function addSection(d = {}) {
     <div class="sec-block-body">
       <textarea class="form-control" data-f="content" rows="7"
                 placeholder="Bölüm içeriğini buraya yazın...">${esc(d.content || '')}</textarea>
+      <div class="paste-note rich-note" data-rich-note hidden role="status" aria-live="polite"><i class="bi bi-type-italic" aria-hidden="true"></i><span></span></div>
       <div class="paste-note"><i class="bi bi-clipboard-check"></i><span>Word'den metin ve tabloları birlikte buraya yapıştırabilirsiniz; tablolar metindeki sırasına göre otomatik eklenir.</span></div>
     </div>`;
+  div.contentRich = normalizeContentRich(d.content_rich);
   list.appendChild(div);
   initSectionDrag(div);
   div.querySelector('[data-f="content"]').addEventListener('paste', e => handleSectionPaste(e, uid));
+  div.querySelector('[data-f="content"]').addEventListener('input', () => updateRichNote(div));
+  updateRichNote(div);
   badge('badge-sections', document.querySelectorAll('#sections-list .sec-block').length, 'bölüm');
   updateSectionDropdowns();
   return uid;
@@ -982,13 +988,77 @@ function removeSection(id) {
   updateSectionDropdowns();
 }
 
+// Inline formatting imported from Word (Phase 1.4). The textarea keeps the
+// plain text; content_rich travels beside it and output applies it only to
+// paragraphs whose text is unchanged. Entries whose paragraph text no longer
+// occurs in the section are dropped when the section is collected.
+function normalizeContentRich(rich) {
+  if (!rich || typeof rich !== 'object' || rich.version !== 1 || !Array.isArray(rich.paragraphs)) return null;
+  const paragraphs = rich.paragraphs.filter(entry => entry && typeof entry.plain === 'string' && entry.plain &&
+    Array.isArray(entry.segments) && entry.segments.length &&
+    entry.segments.every(segment => segment && typeof segment.t === 'string') &&
+    entry.segments.map(segment => segment.t).join('') === entry.plain);
+  return paragraphs.length ? {version: 1, paragraphs: structuredClone(paragraphs)} : null;
+}
+
+function richEntryIsFormatted(entry) {
+  return entry.segments.some(segment => segment.b === true || segment.i === true || richSegmentIsSpecial(segment));
+}
+
+// Equations (and notes) are kept for edited paragraphs too: output places them
+// again when their text is unchanged and unambiguous (formatter.py).
+function richSegmentIsSpecial(segment) {
+  return Boolean(segment.math || segment.note);
+}
+
+function currentContentRich(block, content) {
+  const rich = block.contentRich;
+  if (!rich) return null;
+  const paragraphs = rich.paragraphs.filter(entry => content.includes(entry.plain) || entry.segments.some(richSegmentIsSpecial));
+  return paragraphs.some(richEntryIsFormatted) ? {version: 1, paragraphs} : null;
+}
+
+function contentParagraphs(content) {
+  return content.trim().split(/\n\s*\n/).map(part => part.trim()).filter(Boolean);
+}
+
+// Plain-language status under a section that has Word formatting: how many
+// paragraphs keep bold/italic, and how many lost it because they were edited.
+// Output applies formatting only to unchanged paragraphs (formatter.py).
+function updateRichNote(block) {
+  const note = block.querySelector('[data-rich-note]');
+  const formatted = (block.contentRich?.paragraphs || []).filter(richEntryIsFormatted);
+  if (!note) return;
+  if (!formatted.length) { note.hidden = true; return; }
+  const remaining = contentParagraphs(block.querySelector('[data-f="content"]').value);
+  let kept = 0;
+  for (const entry of formatted) {
+    const index = remaining.indexOf(entry.plain);
+    if (index >= 0) { kept += 1; remaining.splice(index, 1); }
+  }
+  const lost = formatted.length - kept;
+  const specials = formatted.some(entry => entry.segments.some(richSegmentIsSpecial));
+  const what = specials ? 'kalın/italik biçim, denklemler ve dipnotlar' : 'kalın/italik biçim';
+  let text = kept ? `Word’deki ${what} ${kept} paragrafta korunuyor ve çıktıya aktarılacak.` : '';
+  if (lost) text += (text ? ' ' : '') + `${lost} paragraf değiştirildiği için o paragrafların kalın/italik biçimi artık uygulanmayacak; metin olduğu gibi kalır.` +
+    (specials ? ' Bu paragraflardaki denklem ve dipnotlar, denklem metnine/dipnot işaretine (¹, ⁱ) ve hemen yanındaki karakterlere dokunulmadıysa korunur.' : '');
+  note.dataset.state = lost ? 'partial' : 'kept';
+  note.querySelector('span').textContent = text;
+  note.hidden = false;
+}
+
 function collectSections() {
-  return [...document.querySelectorAll('#sections-list .sec-block')].map(b => ({
-    id: b.dataset.sectionUid,
-    name:    b.querySelector('[data-f="name"]').value.trim(),
-    level:   b.querySelector('[data-f="level"]').value,
-    content: b.querySelector('[data-f="content"]').value.trim(),
-  }));
+  return [...document.querySelectorAll('#sections-list .sec-block')].map(b => {
+    const section = {
+      id: b.dataset.sectionUid,
+      name:    b.querySelector('[data-f="name"]').value.trim(),
+      level:   b.querySelector('[data-f="level"]').value,
+      content: b.querySelector('[data-f="content"]').value.trim(),
+    };
+    const rich = currentContentRich(b, section.content);
+    if (rich) section.content_rich = rich;
+    return section;
+  });
 }
 
 function sectionNameForUid(uid) {

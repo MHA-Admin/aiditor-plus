@@ -17,7 +17,7 @@ a = Analysis(
         (os.path.join(BASE, 'formatter.py'), '.'),
     ] + collect_data_files('webview') + collect_data_files('docx') + collect_data_files('pypdfium2') + collect_data_files('pypdfium2_raw') + copy_metadata('pypdfium2'),
     hiddenimports=[
-        'webview', 'webview.platforms.cocoa', 'desktop', 'sqlite3', 'account_store', 'journal_templates',
+        'webview', 'webview.platforms.cocoa', 'desktop', 'sqlite3', 'account_store', 'journal_templates', 'equations',
         'flask', 'flask.templating',
         'werkzeug', 'werkzeug.routing', 'werkzeug.serving',
         'werkzeug.exceptions', 'werkzeug.utils',
@@ -60,8 +60,8 @@ app = BUNDLE(
     info_plist={
         'CFBundleName':               'AI-ditor Plus',
         'CFBundleDisplayName':        'AI-ditor Plus',
-        'CFBundleVersion':            '2.4.2',
-        'CFBundleShortVersionString': '2.4.2',
+        'CFBundleVersion':            '2.5.0',
+        'CFBundleShortVersionString': '2.5.0',
         'NSHighResolutionCapable':    True,
         'LSMinimumSystemVersion':     '13.0',
     },

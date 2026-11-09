@@ -8,16 +8,21 @@ import threading
 from docx import Document
 from docx.enum.table import WD_TABLE_ALIGNMENT, WD_CELL_VERTICAL_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.oxml import OxmlElement
-from docx.oxml.ns import qn
-from docx.opc.constants import RELATIONSHIP_TYPE as RT
+from docx.oxml import OxmlElement, parse_xml
+from docx.oxml.ns import nsdecls, qn
+from docx.opc.constants import CONTENT_TYPE as CT, RELATIONSHIP_TYPE as RT
+from docx.opc.packuri import PackURI
+from docx.opc.part import XmlPart
+from docx.text.paragraph import Paragraph
 from docx.shared import Cm, Pt, RGBColor
 from PIL import Image
 
 from formatter import (_cover_profile, _english_label, _normalize_table_model, _turkish_label,
-                       _numbered_section_title, _parse_table_rows, turkish_sort_key)
+                       _numbered_section_title, _parse_table_rows, citation_spans, formatted_runs, section_paragraph_attrs,
+                       turkish_sort_key)
 from journal_templates import normalize_settings
 from citation_links import CitationIndex
+from equations import safe_omml
 from page_furniture import (LAST_PAGE, article_values, block_height_cm, citation_text, page_value,
                             resolved_parts, revision_dates, running_slots, text_parts)
 
@@ -799,12 +804,116 @@ def _figure_or_table(doc, item, figures, english):
     _paragraph(doc, after=3, size=2)
 
 
+class _NotesPartOwner:
+    """Minimal paragraph parent so note paragraphs resolve ``.part`` (URL relationships) to their notes part."""
+
+    def __init__(self, part):
+        self.part = part
+
+
+class _Notes:
+    """Native Word footnotes/endnotes (Phase 1.6); parts are added only when a note is written."""
+
+    PARTS = {'footnote': ('/word/footnotes.xml', CT.WML_FOOTNOTES, RT.FOOTNOTES, 'footnotes'),
+             'endnote': ('/word/endnotes.xml', CT.WML_ENDNOTES, RT.ENDNOTES, 'endnotes')}
+
+    def __init__(self, document, citations):
+        self.document, self.citations = document, citations
+        self.parts, self.next_id = {}, {'footnote': 1, 'endnote': 1}
+
+    def _part(self, kind):
+        if kind not in self.parts:
+            partname, content_type, relationship, root = self.PARTS[kind]
+            separators = ''.join(
+                f'<w:{kind} w:type="{kind_type}" w:id="{note_id}"><w:p><w:pPr><w:spacing w:after="0" w:line="240" '
+                f'w:lineRule="auto"/></w:pPr><w:r><w:{mark}/></w:r></w:p></w:{kind}>'
+                for kind_type, note_id, mark in (('separator', -1, 'separator'),
+                                                 ('continuationSeparator', 0, 'continuationSeparator')))
+            element = parse_xml(f'<w:{root} {nsdecls("w")}>{separators}</w:{root}>')
+            part = XmlPart(PackURI(partname), content_type, element, self.document.part.package)
+            self.document.part.relate_to(part, relationship)
+            self.parts[kind] = part
+        return self.parts[kind]
+
+    def add(self, p, note):
+        kind = note['type']
+        part = self._part(kind)
+        note_id = self.next_id[kind]
+        self.next_id[kind] += 1
+        element = _element(kind, id=note_id)
+        texts = [text for text in note['paragraphs'] if text.strip()] or ['']
+        for index, text in enumerate(texts):
+            paragraph = Paragraph(_element('p'), _NotesPartOwner(part))
+            fmt = paragraph.paragraph_format
+            fmt.space_before, fmt.space_after, fmt.line_spacing = Pt(0), Pt(2), 1.0
+            if index == 0:
+                mark = _element('r')
+                r_pr = _element('rPr'); r_pr.append(_element('vertAlign', val='superscript')); mark.append(r_pr)
+                mark.append(_element(kind + 'Ref'))
+                paragraph._p.append(mark)
+                text = ' ' + text
+            cursor = 0
+            for start, end, index_ in self.citations.spans(text):
+                _text(paragraph, text[cursor:start], size=NOTE_SIZE)
+                link = _element('hyperlink', anchor='aiditor_ref_' + str(index_), history='1')
+                link.append(_run(paragraph, text[start:end], size=NOTE_SIZE)._r)
+                paragraph._p.append(link)
+                cursor = end
+            _text(paragraph, text[cursor:], size=NOTE_SIZE)
+            element.append(paragraph._p)
+        part.element.append(element)
+        reference = _element('r')
+        r_pr = _element('rPr'); r_pr.append(_element('vertAlign', val='superscript')); reference.append(r_pr)
+        reference.append(_element(kind + 'Reference', id=note_id))
+        p._p.append(reference)
+
+
+NOTE_SIZE = 9
+
+
+def _special_run(p, piece, special, notes=None):
+    """Equation (Phase 1.5): the original Word OMML; note (Phase 1.6): a native footnote/endnote.
+
+    Plain text when the stored data cannot be used.
+    """
+    if 'math' in special:
+        node = safe_omml(special['math'].get('omml'))
+        if node is not None:
+            p._p.append(copy.deepcopy(node))
+            return
+    if 'note' in special and notes is not None:
+        notes.add(p, special['note'])
+        return
+    _text(p, piece)
+
+
+def _formatted_body_text(p, text, attrs, citations, notes=None):
+    """Body paragraph with partial bold/italic (Phase 1.4b); citation links keep their runs' formatting."""
+    def write(start, end):
+        for piece, bold, italic, special in formatted_runs(text, attrs, start, end):
+            if special is not None:
+                _special_run(p, piece, special, notes)
+            else:
+                _text(p, piece, bold=bold, italic=italic)
+
+    cursor = 0
+    for start, end, index in citation_spans(citations, text, attrs):
+        write(cursor, start)
+        link = _element('hyperlink', anchor='aiditor_ref_' + str(index), history='1')
+        for piece, bold, italic, _ in formatted_runs(text, attrs, start, end):
+            link.append(_run(p, piece, bold=bold, italic=italic)._r)
+        p._p.append(link)
+        cursor = end
+    write(cursor, len(text))
+
+
 def _body(doc, data, settings, figures):
     english = settings['english_only']
     scholarly = settings['template_id'] == 'scholarly'
     bilingual_panel = settings['template_id'] == 'bilingual_panel'
     refs = sorted([r.strip() for r in data.get('references', '').splitlines() if r.strip()], key=turkish_sort_key)
     citations = CitationIndex(refs, settings['link_citations'])
+    notes = _Notes(doc, citations)
     items = data.get('figtables', [])
     placed = set()
     for section in data.get('sections', []):
@@ -821,8 +930,10 @@ def _body(doc, data, settings, figures):
         for i, item in assigned:
             if item.get('placement') == 'section_start':
                 _figure_or_table(doc, item, figures, english); placed.add(i)
+        paragraph_flags = iter(section_paragraph_attrs(section))
         for para in re.split(r'\n\s*\n', section.get('content', '').strip()):
             if para.strip():
+                flags = next(paragraph_flags, None)
                 p = _paragraph(doc, align='justify')
                 if scholarly:
                     p.paragraph_format.first_line_indent = Cm(1.25)
@@ -832,15 +943,18 @@ def _body(doc, data, settings, figures):
                     p.paragraph_format.first_line_indent = Cm(0)
                     p.paragraph_format.line_spacing = 1
                     p.paragraph_format.space_after = Pt(6)
-                cursor = 0
-                for start, end, index in citations.spans(para.strip()):
-                    _text(p, para.strip()[cursor:start])
-                    link = _element('hyperlink', anchor='aiditor_ref_' + str(index), history='1')
-                    run = _run(p, para.strip()[start:end])
-                    link.append(run._r)
-                    p._p.append(link)
-                    cursor = end
-                _text(p, para.strip()[cursor:])
+                if flags is None:
+                    cursor = 0
+                    for start, end, index in citations.spans(para.strip()):
+                        _text(p, para.strip()[cursor:start])
+                        link = _element('hyperlink', anchor='aiditor_ref_' + str(index), history='1')
+                        run = _run(p, para.strip()[start:end])
+                        link.append(run._r)
+                        p._p.append(link)
+                        cursor = end
+                    _text(p, para.strip()[cursor:])
+                else:
+                    _formatted_body_text(p, para.strip(), flags, citations, notes)
                 for i, item in assigned:
                     anchor = item.get('after_para', '').strip()
                     if i not in placed and anchor and anchor.lower() in para.lower():

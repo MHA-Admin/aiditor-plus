@@ -21,6 +21,12 @@ macOS 13 veya üzerinde Mac'inize uygun DMG'yi açıp (Elma menüsü → Bu Mac 
 
 **macOS'ta ilk açılış:** Uygulama Apple noter onayına sahip olmadığından macOS ilk açılışı engeller. macOS 15 ve sonrasında **Sistem Ayarları → Gizlilik ve Güvenlik → Yine de Aç**, macOS 13–14'te uygulamaya **Control+tıklayıp → Aç** yolunu izleyin; bu yalnızca bir kez gerekir. Ayrıntılı adımlar kurulum diskindeki *İlk Açılış – Okuyun* dosyasında ve [kullanım kılavuzunda](docs/KULLANIM_KILAVUZU.md#2-kurulum) yer alır. Uygulama yine açılmazsa hatayı bir uyarıyla bildirir ve ayrıntıları `~/Library/Logs/AI-ditor Plus/aiditor-plus.log` dosyasına yazar.
 
+## 2.5.0 ile gelenler (yayın adayı)
+
+- **Kısmi kalın/italik, denklemler ve dipnotlar:** Word'den aktarılan makalelerde gövde metnindeki kalın ve italik sözcükler, Word denklemleri, dipnotlar ve son notlar artık Word ve PDF çıktısına korunarak aktarılır. Metin kutusu düz metin göstermeye devam eder; altındaki not neyin korunduğunu bildirir.
+- **Uyarılar:** Dönüştürülemeyen denklemler, eski tip denklem nesneleri ve gövde dışında kalan notlar içe aktarma özetinde listelenir; hiçbir içerik sessizce silinmez.
+- **Uyumluluk:** Biçim içeren makaleler yeni proje sürümüyle (`version: 2`) kaydedilir. 2.4.x bu dosyaları açmaz; böylece biçim bilgisi eski sürümde sessizce kaybolmaz. Ayrıntılar: [sürüm notları](CHANGELOG.md).
+
 ## 2.4.2 düzeltmesi
 
 - **Zotero, Mendeley ve EndNote atıfları:** Bu programların Word'e alan veya içerik denetimi olarak eklediği metin içi atıflar içe aktarımda kayboluyordu. Artık metne olduğu gibi aktarılıyor ve Word/PDF çıktısında kaynakçaya bağlanıyor. Eski sürümle aktarılmış makaleler için Word dosyasını yeniden içe aktarın.

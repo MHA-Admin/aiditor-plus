@@ -53,7 +53,10 @@ async function snapshotProject() {
       figures[item.file_key] = {name:file.name, data:await figureDataCache.get(file)};
     }
   }
-  return {format:'aiditor-project', version:1, data, figures, ui};
+  // Version 2 only when formatting is saved: earlier releases accept only
+  // version 1 and so refuse the file instead of dropping the formatting.
+  const version = data.sections.some(section => section.content_rich) ? 2 : 1;
+  return {format:'aiditor-project', version, data, figures, ui};
 }
 
 async function applySavedProject(project, prepared, filename) {
@@ -125,7 +128,7 @@ async function loadProject(file) {
     if (file.size > 48 * 1024 * 1024) throw new Error('Proje dosyası en fazla 48 MB olabilir.');
     const project = JSON.parse(await file.text());
     let data = project?.data;
-    if (!['aiditor-project','jgttr-project'].includes(project?.format) || project.version !== 1 || !data?.cover || !data?.abstract ||
+    if (!['aiditor-project','jgttr-project'].includes(project?.format) || ![1, 2].includes(project.version) || !data?.cover || !data?.abstract ||
         !['sections','authors','figtables'].every(key => Array.isArray(data[key]))) {
       throw new Error('Bu dosya geçerli bir AI-ditor Plus projesi değil.');
     }
