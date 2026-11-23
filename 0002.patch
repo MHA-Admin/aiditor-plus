@@ -1,0 +1,468 @@
+From 538bd65b0105c00660573c0ac0071439c82c3ebd Mon Sep 17 00:00:00 2001
+From: AI-ditor Plus QA <noreply@anthropic.com>
+Date: Sun, 8 Nov 2026 23:26:28 +0300
+Subject: [PATCH 2/2] =?UTF-8?q?Faz=200:=20golden=20testlerini=20Windows=20?=
+ =?UTF-8?q?ve=20ba=C4=9F=C4=B1ml=C4=B1l=C4=B1k=20s=C3=BCr=C3=BCmlerine=20k?=
+ =?UTF-8?q?ar=C5=9F=C4=B1=20sa=C4=9Flamla=C5=9Ft=C4=B1r?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- Karşılaştırmada satır sonu biçimi ve satır sonu boşlukları yok sayılır
+  (Windows autocrlf, git am --whitespace=fix, editör ayarları)
+- python-docx şablonundan gelen ve değişmeyen Word parçaları yalnızca adla kaydedilir;
+  kütüphane güncellemesi üretilen parçalar değişmedikçe testi bozmaz
+- Altın dosyaları yeniden üretme komutu düzeltildi (tests/ bir paket değildir)
+
+Üretim kodu değiştirilmedi. Golden farkı yalnızca 45 şablon özeti satırı ve
+8 satır sonu boşluğundan oluşur; içerik farkı yoktur.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01BAe7mbqjxazoBwutpyRaNY
+---
+ tests/golden/docx/bilingual_panel.txt        |  5 -----
+ tests/golden/docx/centered.txt               |  5 -----
+ tests/golden/docx/classic.txt                |  5 -----
+ tests/golden/docx/classic_auto_end_page.txt  |  5 -----
+ tests/golden/docx/classic_english_only.txt   |  5 -----
+ tests/golden/docx/contemporary.txt           |  5 -----
+ tests/golden/docx/minimal.txt                |  5 -----
+ tests/golden/docx/scholarly.txt              |  5 -----
+ tests/golden/latex/centered.tex              |  2 +-
+ tests/golden/latex/classic.tex               |  2 +-
+ tests/golden/latex/classic_auto_end_page.tex |  2 +-
+ tests/golden/latex/classic_english_only.tex  |  2 +-
+ tests/golden/latex/contemporary.tex          |  2 +-
+ tests/golden/latex/minimal.tex               |  2 +-
+ tests/golden/project/legacy_project.tex      |  4 ++--
+ tests/golden/project/legacy_project_docx.txt |  5 -----
+ tests/test_regression_golden.py              | 22 +++++++++++++-------
+ 17 files changed, 23 insertions(+), 60 deletions(-)
+
+diff --git a/tests/golden/docx/bilingual_panel.txt b/tests/golden/docx/bilingual_panel.txt
+index 49131f8..5db0248 100644
+--- a/tests/golden/docx/bilingual_panel.txt
++++ b/tests/golden/docx/bilingual_panel.txt
+@@ -1942,7 +1942,6 @@ word/webSettings.xml
+ </w:sectPr>
+ </w:body>
+ </w:document>
+-### word/fontTable.xml sha256=79385fb7f60247507ecaffc292e9ebd52ea0657b8634f629ba6fccc54011d6bb
+ ### word/footer1.xml
+ <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+ <w:ftr xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 wp14">
+@@ -2726,7 +2725,6 @@ word/webSettings.xml
+ </w:tr>
+ </w:tbl>
+ </w:hdr>
+-### word/numbering.xml sha256=70976f19cbcd896e51890859fe6ecb3467a5a7ad0c040160fedc5a1993cb09ce
+ ### word/settings.xml
+ <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+ <w:settings xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:sl="http://schemas.openxmlformats.org/schemaLibrary/2006/main" mc:Ignorable="w14">
+@@ -2987,9 +2985,6 @@ word/webSettings.xml
+ <w:szCs w:val="18"/>
+ </w:rPr>
+ </w:style>
+-### word/stylesWithEffects.xml sha256=463ae0928cf0d84775dbf8cf18d6c3029f6707c81bf590f6d6dd8757a5e93f15
+-### word/theme/theme1.xml sha256=e3a8ab7db9ca7afca56f5f2820a56e8b660016c647773555b060b0a02ac76941
+-### word/webSettings.xml sha256=349d36de7434d09f86987ff671d8814964a0588c1e630c06e562cda7e75e9f95
+ ### core properties
+ title=Akademik Yayıncılıkta Açık ve Tekrarlanabilir İş Akışları
+ author=Deniz Örnek; Alex Smith
+diff --git a/tests/golden/docx/centered.txt b/tests/golden/docx/centered.txt
+index 36dec1d..77282c7 100644
+--- a/tests/golden/docx/centered.txt
++++ b/tests/golden/docx/centered.txt
+@@ -1531,7 +1531,6 @@ word/webSettings.xml
+ </w:sectPr>
+ </w:body>
+ </w:document>
+-### word/fontTable.xml sha256=79385fb7f60247507ecaffc292e9ebd52ea0657b8634f629ba6fccc54011d6bb
+ ### word/footer1.xml
+ <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+ <w:ftr xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 wp14">
+@@ -2075,7 +2074,6 @@ word/webSettings.xml
+ </w:r>
+ </w:p>
+ </w:hdr>
+-### word/numbering.xml sha256=70976f19cbcd896e51890859fe6ecb3467a5a7ad0c040160fedc5a1993cb09ce
+ ### word/settings.xml
+ <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+ <w:settings xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:sl="http://schemas.openxmlformats.org/schemaLibrary/2006/main" mc:Ignorable="w14">
+@@ -2335,9 +2333,6 @@ word/webSettings.xml
+ <w:szCs w:val="18"/>
+ </w:rPr>
+ </w:style>
+-### word/stylesWithEffects.xml sha256=463ae0928cf0d84775dbf8cf18d6c3029f6707c81bf590f6d6dd8757a5e93f15
+-### word/theme/theme1.xml sha256=e3a8ab7db9ca7afca56f5f2820a56e8b660016c647773555b060b0a02ac76941
+-### word/webSettings.xml sha256=349d36de7434d09f86987ff671d8814964a0588c1e630c06e562cda7e75e9f95
+ ### core properties
+ title=Akademik Yayıncılıkta Açık ve Tekrarlanabilir İş Akışları
+ author=Deniz Örnek; Alex Smith
+diff --git a/tests/golden/docx/classic.txt b/tests/golden/docx/classic.txt
+index 589f041..17b0bb8 100644
+--- a/tests/golden/docx/classic.txt
++++ b/tests/golden/docx/classic.txt
+@@ -1807,7 +1807,6 @@ word/webSettings.xml
+ </w:sectPr>
+ </w:body>
+ </w:document>
+-### word/fontTable.xml sha256=79385fb7f60247507ecaffc292e9ebd52ea0657b8634f629ba6fccc54011d6bb
+ ### word/footer1.xml
+ <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+ <w:ftr xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 wp14">
+@@ -2351,7 +2350,6 @@ word/webSettings.xml
+ </w:r>
+ </w:p>
+ </w:hdr>
+-### word/numbering.xml sha256=70976f19cbcd896e51890859fe6ecb3467a5a7ad0c040160fedc5a1993cb09ce
+ ### word/settings.xml
+ <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+ <w:settings xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:sl="http://schemas.openxmlformats.org/schemaLibrary/2006/main" mc:Ignorable="w14">
+@@ -2611,9 +2609,6 @@ word/webSettings.xml
+ <w:szCs w:val="18"/>
+ </w:rPr>
+ </w:style>
+-### word/stylesWithEffects.xml sha256=463ae0928cf0d84775dbf8cf18d6c3029f6707c81bf590f6d6dd8757a5e93f15
+-### word/theme/theme1.xml sha256=e3a8ab7db9ca7afca56f5f2820a56e8b660016c647773555b060b0a02ac76941
+-### word/webSettings.xml sha256=349d36de7434d09f86987ff671d8814964a0588c1e630c06e562cda7e75e9f95
+ ### core properties
+ title=Akademik Yayıncılıkta Açık ve Tekrarlanabilir İş Akışları
+ author=Deniz Örnek; Alex Smith
+diff --git a/tests/golden/docx/classic_auto_end_page.txt b/tests/golden/docx/classic_auto_end_page.txt
+index 8b6a172..7027703 100644
+--- a/tests/golden/docx/classic_auto_end_page.txt
++++ b/tests/golden/docx/classic_auto_end_page.txt
+@@ -1853,7 +1853,6 @@ word/webSettings.xml
+ </w:sectPr>
+ </w:body>
+ </w:document>
+-### word/fontTable.xml sha256=79385fb7f60247507ecaffc292e9ebd52ea0657b8634f629ba6fccc54011d6bb
+ ### word/footer1.xml
+ <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+ <w:ftr xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 wp14">
+@@ -2622,7 +2621,6 @@ word/webSettings.xml
+ </w:tr>
+ </w:tbl>
+ </w:hdr>
+-### word/numbering.xml sha256=70976f19cbcd896e51890859fe6ecb3467a5a7ad0c040160fedc5a1993cb09ce
+ ### word/settings.xml
+ <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+ <w:settings xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:sl="http://schemas.openxmlformats.org/schemaLibrary/2006/main" mc:Ignorable="w14">
+@@ -2884,9 +2882,6 @@ word/webSettings.xml
+ <w:szCs w:val="18"/>
+ </w:rPr>
+ </w:style>
+-### word/stylesWithEffects.xml sha256=463ae0928cf0d84775dbf8cf18d6c3029f6707c81bf590f6d6dd8757a5e93f15
+-### word/theme/theme1.xml sha256=e3a8ab7db9ca7afca56f5f2820a56e8b660016c647773555b060b0a02ac76941
+-### word/webSettings.xml sha256=349d36de7434d09f86987ff671d8814964a0588c1e630c06e562cda7e75e9f95
+ ### core properties
+ title=Akademik Yayıncılıkta Açık ve Tekrarlanabilir İş Akışları
+ author=Deniz Örnek; Alex Smith
+diff --git a/tests/golden/docx/classic_english_only.txt b/tests/golden/docx/classic_english_only.txt
+index 6f98a05..34c93a1 100644
+--- a/tests/golden/docx/classic_english_only.txt
++++ b/tests/golden/docx/classic_english_only.txt
+@@ -1710,7 +1710,6 @@ word/webSettings.xml
+ </w:sectPr>
+ </w:body>
+ </w:document>
+-### word/fontTable.xml sha256=79385fb7f60247507ecaffc292e9ebd52ea0657b8634f629ba6fccc54011d6bb
+ ### word/footer1.xml
+ <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+ <w:ftr xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 wp14">
+@@ -2254,7 +2253,6 @@ word/webSettings.xml
+ </w:r>
+ </w:p>
+ </w:hdr>
+-### word/numbering.xml sha256=70976f19cbcd896e51890859fe6ecb3467a5a7ad0c040160fedc5a1993cb09ce
+ ### word/settings.xml
+ <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+ <w:settings xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:sl="http://schemas.openxmlformats.org/schemaLibrary/2006/main" mc:Ignorable="w14">
+@@ -2514,9 +2512,6 @@ word/webSettings.xml
+ <w:szCs w:val="18"/>
+ </w:rPr>
+ </w:style>
+-### word/stylesWithEffects.xml sha256=463ae0928cf0d84775dbf8cf18d6c3029f6707c81bf590f6d6dd8757a5e93f15
+-### word/theme/theme1.xml sha256=e3a8ab7db9ca7afca56f5f2820a56e8b660016c647773555b060b0a02ac76941
+-### word/webSettings.xml sha256=349d36de7434d09f86987ff671d8814964a0588c1e630c06e562cda7e75e9f95
+ ### core properties
+ title=Open and Reproducible Workflows in Academic Publishing
+ author=Deniz Örnek; Alex Smith
+diff --git a/tests/golden/docx/contemporary.txt b/tests/golden/docx/contemporary.txt
+index 9ae3c5c..4b5c4dd 100644
+--- a/tests/golden/docx/contemporary.txt
++++ b/tests/golden/docx/contemporary.txt
+@@ -1636,7 +1636,6 @@ word/webSettings.xml
+ </w:sectPr>
+ </w:body>
+ </w:document>
+-### word/fontTable.xml sha256=79385fb7f60247507ecaffc292e9ebd52ea0657b8634f629ba6fccc54011d6bb
+ ### word/footer1.xml
+ <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+ <w:ftr xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 wp14">
+@@ -2180,7 +2179,6 @@ word/webSettings.xml
+ </w:r>
+ </w:p>
+ </w:hdr>
+-### word/numbering.xml sha256=70976f19cbcd896e51890859fe6ecb3467a5a7ad0c040160fedc5a1993cb09ce
+ ### word/settings.xml
+ <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+ <w:settings xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:sl="http://schemas.openxmlformats.org/schemaLibrary/2006/main" mc:Ignorable="w14">
+@@ -2440,9 +2438,6 @@ word/webSettings.xml
+ <w:szCs w:val="18"/>
+ </w:rPr>
+ </w:style>
+-### word/stylesWithEffects.xml sha256=463ae0928cf0d84775dbf8cf18d6c3029f6707c81bf590f6d6dd8757a5e93f15
+-### word/theme/theme1.xml sha256=e3a8ab7db9ca7afca56f5f2820a56e8b660016c647773555b060b0a02ac76941
+-### word/webSettings.xml sha256=349d36de7434d09f86987ff671d8814964a0588c1e630c06e562cda7e75e9f95
+ ### core properties
+ title=Akademik Yayıncılıkta Açık ve Tekrarlanabilir İş Akışları
+ author=Deniz Örnek; Alex Smith
+diff --git a/tests/golden/docx/minimal.txt b/tests/golden/docx/minimal.txt
+index 0af3111..3cb1f99 100644
+--- a/tests/golden/docx/minimal.txt
++++ b/tests/golden/docx/minimal.txt
+@@ -1581,7 +1581,6 @@ word/webSettings.xml
+ </w:sectPr>
+ </w:body>
+ </w:document>
+-### word/fontTable.xml sha256=79385fb7f60247507ecaffc292e9ebd52ea0657b8634f629ba6fccc54011d6bb
+ ### word/footer1.xml
+ <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+ <w:ftr xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 wp14">
+@@ -2088,7 +2087,6 @@ word/webSettings.xml
+ </w:r>
+ </w:p>
+ </w:hdr>
+-### word/numbering.xml sha256=70976f19cbcd896e51890859fe6ecb3467a5a7ad0c040160fedc5a1993cb09ce
+ ### word/settings.xml
+ <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+ <w:settings xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:sl="http://schemas.openxmlformats.org/schemaLibrary/2006/main" mc:Ignorable="w14">
+@@ -2348,9 +2346,6 @@ word/webSettings.xml
+ <w:szCs w:val="18"/>
+ </w:rPr>
+ </w:style>
+-### word/stylesWithEffects.xml sha256=463ae0928cf0d84775dbf8cf18d6c3029f6707c81bf590f6d6dd8757a5e93f15
+-### word/theme/theme1.xml sha256=e3a8ab7db9ca7afca56f5f2820a56e8b660016c647773555b060b0a02ac76941
+-### word/webSettings.xml sha256=349d36de7434d09f86987ff671d8814964a0588c1e630c06e562cda7e75e9f95
+ ### core properties
+ title=Akademik Yayıncılıkta Açık ve Tekrarlanabilir İş Akışları
+ author=Deniz Örnek; Alex Smith
+diff --git a/tests/golden/docx/scholarly.txt b/tests/golden/docx/scholarly.txt
+index 923a2c1..15f4500 100644
+--- a/tests/golden/docx/scholarly.txt
++++ b/tests/golden/docx/scholarly.txt
+@@ -1756,7 +1756,6 @@ word/webSettings.xml
+ </w:sectPr>
+ </w:body>
+ </w:document>
+-### word/fontTable.xml sha256=79385fb7f60247507ecaffc292e9ebd52ea0657b8634f629ba6fccc54011d6bb
+ ### word/footer1.xml
+ <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+ <w:ftr xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 wp14">
+@@ -2464,7 +2463,6 @@ word/webSettings.xml
+ </w:tr>
+ </w:tbl>
+ </w:hdr>
+-### word/numbering.xml sha256=70976f19cbcd896e51890859fe6ecb3467a5a7ad0c040160fedc5a1993cb09ce
+ ### word/settings.xml
+ <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+ <w:settings xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:sl="http://schemas.openxmlformats.org/schemaLibrary/2006/main" mc:Ignorable="w14">
+@@ -2725,9 +2723,6 @@ word/webSettings.xml
+ <w:szCs w:val="18"/>
+ </w:rPr>
+ </w:style>
+-### word/stylesWithEffects.xml sha256=463ae0928cf0d84775dbf8cf18d6c3029f6707c81bf590f6d6dd8757a5e93f15
+-### word/theme/theme1.xml sha256=e3a8ab7db9ca7afca56f5f2820a56e8b660016c647773555b060b0a02ac76941
+-### word/webSettings.xml sha256=349d36de7434d09f86987ff671d8814964a0588c1e630c06e562cda7e75e9f95
+ ### core properties
+ title=Akademik Yayıncılıkta Açık ve Tekrarlanabilir İş Akışları
+ author=Deniz Örnek; Alex Smith
+diff --git a/tests/golden/latex/centered.tex b/tests/golden/latex/centered.tex
+index dd7bf60..224f9bf 100644
+--- a/tests/golden/latex/centered.tex
++++ b/tests/golden/latex/centered.tex
+@@ -167,7 +167,7 @@
+ \textbf{Etik Beyan / Ethics Statement: }\JGTTRethicsstatement\par
+ \textit{Örnek makale: sayfa düzenini göstermek amacıyla hazırlanmıştır.}\par
+ Bu makale CC BY 4.0 lisansı ile yayımlanmıştır.\par
+-\textbf{DOI:} \JGTTRdoilink\par 
++\textbf{DOI:} \JGTTRdoilink\par
+ \IfFileExists{license_logo.png}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{license_logo.png}}{\IfFileExists{license_logo.jpg}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{license_logo.jpg}}{\IfFileExists{license_logo.jpeg}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{license_logo.jpeg}}{\IfFileExists{license_logo.pdf}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{license_logo.pdf}}{}}}}
+ 
+   \end{minipage}%
+diff --git a/tests/golden/latex/classic.tex b/tests/golden/latex/classic.tex
+index bd2a612..7344424 100644
+--- a/tests/golden/latex/classic.tex
++++ b/tests/golden/latex/classic.tex
+@@ -167,7 +167,7 @@
+ \textbf{Etik Beyan / Ethics Statement: }\JGTTRethicsstatement\par
+ \textit{Örnek makale: sayfa düzenini göstermek amacıyla hazırlanmıştır.}\par
+ Bu makale CC BY 4.0 lisansı ile yayımlanmıştır.\par
+-\textbf{DOI:} \JGTTRdoilink\par 
++\textbf{DOI:} \JGTTRdoilink\par
+ \IfFileExists{license_logo.png}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{license_logo.png}}{\IfFileExists{license_logo.jpg}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{license_logo.jpg}}{\IfFileExists{license_logo.jpeg}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{license_logo.jpeg}}{\IfFileExists{license_logo.pdf}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{license_logo.pdf}}{}}}}
+ 
+   \end{minipage}%
+diff --git a/tests/golden/latex/classic_auto_end_page.tex b/tests/golden/latex/classic_auto_end_page.tex
+index ce49086..0eca22b 100644
+--- a/tests/golden/latex/classic_auto_end_page.tex
++++ b/tests/golden/latex/classic_auto_end_page.tex
+@@ -166,7 +166,7 @@
+ \textbf{Etik Beyan / Ethics Statement: }\JGTTRethicsstatement\par
+ \textit{Örnek makale: sayfa düzenini göstermek amacıyla hazırlanmıştır.}\par
+ {\raggedleft Bu makale CC BY 4.0 lisansı ile yayımlanmıştır.\par}
+-\textbf{DOI:} \JGTTRdoilink\par 
++\textbf{DOI:} \JGTTRdoilink\par
+ {\raggedleft \IfFileExists{license_logo.png}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{license_logo.png}}{\IfFileExists{license_logo.jpg}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{license_logo.jpg}}{\IfFileExists{license_logo.jpeg}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{license_logo.jpeg}}{\IfFileExists{license_logo.pdf}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{license_logo.pdf}}{}}}}\par}
+ 
+   \end{minipage}%
+diff --git a/tests/golden/latex/classic_english_only.tex b/tests/golden/latex/classic_english_only.tex
+index 76b1f56..6cd4dff 100644
+--- a/tests/golden/latex/classic_english_only.tex
++++ b/tests/golden/latex/classic_english_only.tex
+@@ -167,7 +167,7 @@
+ \textbf{Ethics Statement: }\JGTTRethicsstatement\par
+ \textit{Örnek makale: sayfa düzenini göstermek amacıyla hazırlanmıştır.}\par
+ Bu makale CC BY 4.0 lisansı ile yayımlanmıştır.\par
+-\textbf{DOI:} \JGTTRdoilink\par 
++\textbf{DOI:} \JGTTRdoilink\par
+ \IfFileExists{license_logo.png}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{license_logo.png}}{\IfFileExists{license_logo.jpg}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{license_logo.jpg}}{\IfFileExists{license_logo.jpeg}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{license_logo.jpeg}}{\IfFileExists{license_logo.pdf}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{license_logo.pdf}}{}}}}
+ 
+   \end{minipage}%
+diff --git a/tests/golden/latex/contemporary.tex b/tests/golden/latex/contemporary.tex
+index eef899b..b400307 100644
+--- a/tests/golden/latex/contemporary.tex
++++ b/tests/golden/latex/contemporary.tex
+@@ -167,7 +167,7 @@
+ \textbf{Etik Beyan / Ethics Statement: }\JGTTRethicsstatement\par
+ \textit{Örnek makale: sayfa düzenini göstermek amacıyla hazırlanmıştır.}\par
+ Bu makale CC BY 4.0 lisansı ile yayımlanmıştır.\par
+-\textbf{DOI:} \JGTTRdoilink\par 
++\textbf{DOI:} \JGTTRdoilink\par
+ \IfFileExists{license_logo.png}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{license_logo.png}}{\IfFileExists{license_logo.jpg}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{license_logo.jpg}}{\IfFileExists{license_logo.jpeg}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{license_logo.jpeg}}{\IfFileExists{license_logo.pdf}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{license_logo.pdf}}{}}}}
+ 
+   \end{minipage}%
+diff --git a/tests/golden/latex/minimal.tex b/tests/golden/latex/minimal.tex
+index 9a07c41..87d3179 100644
+--- a/tests/golden/latex/minimal.tex
++++ b/tests/golden/latex/minimal.tex
+@@ -166,7 +166,7 @@
+ \textbf{Etik Beyan / Ethics Statement: }\JGTTRethicsstatement\par
+ \textit{Örnek makale: sayfa düzenini göstermek amacıyla hazırlanmıştır.}\par
+ Bu makale CC BY 4.0 lisansı ile yayımlanmıştır.\par
+-\textbf{DOI:} \JGTTRdoilink\par 
++\textbf{DOI:} \JGTTRdoilink\par
+ \IfFileExists{license_logo.png}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{license_logo.png}}{\IfFileExists{license_logo.jpg}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{license_logo.jpg}}{\IfFileExists{license_logo.jpeg}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{license_logo.jpeg}}{\IfFileExists{license_logo.pdf}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{license_logo.pdf}}{}}}}
+ 
+   \end{minipage}%
+diff --git a/tests/golden/project/legacy_project.tex b/tests/golden/project/legacy_project.tex
+index fbb1eb9..660c36f 100644
+--- a/tests/golden/project/legacy_project.tex
++++ b/tests/golden/project/legacy_project.tex
+@@ -1,5 +1,5 @@
+ % ============================================================
+-%  
++%
+ %  Bu dosya Journal LaTeX Formatter tarafından oluşturulmuştur.
+ %  Overleaf: New Project → Upload Project → bu ZIP'i seçin.
+ %  Derleyici: XeLaTeX
+@@ -165,7 +165,7 @@
+ \textit{* Sorumlu yazar / Corresponding author: \JGTTRcorrespondinginfo}\par
+ {\textbf{Önerilen Atıf / Suggested Citation: }\JGTTRapacitation\par}
+ \textbf{Etik Beyan / Ethics Statement: }\JGTTRethicsstatement\par
+-\textbf{DOI:} \JGTTRdoilink\par 
++\textbf{DOI:} \JGTTRdoilink\par
+ \IfFileExists{journal_license.png}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{journal_license.png}}{\IfFileExists{journal_license.jpg}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{journal_license.jpg}}{\IfFileExists{journal_license.jpeg}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{journal_license.jpeg}}{\IfFileExists{journal_license.pdf}{\includegraphics[height=0.55cm,width=0.35\textwidth,keepaspectratio]{journal_license.pdf}}{}}}}
+ 
+   \end{minipage}%
+diff --git a/tests/golden/project/legacy_project_docx.txt b/tests/golden/project/legacy_project_docx.txt
+index a1412c6..160c631 100644
+--- a/tests/golden/project/legacy_project_docx.txt
++++ b/tests/golden/project/legacy_project_docx.txt
+@@ -798,7 +798,6 @@ word/webSettings.xml
+ </w:sectPr>
+ </w:body>
+ </w:document>
+-### word/fontTable.xml sha256=79385fb7f60247507ecaffc292e9ebd52ea0657b8634f629ba6fccc54011d6bb
+ ### word/footer1.xml
+ <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+ <w:ftr xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 wp14">
+@@ -1262,7 +1261,6 @@ word/webSettings.xml
+ </w:r>
+ </w:p>
+ </w:hdr>
+-### word/numbering.xml sha256=70976f19cbcd896e51890859fe6ecb3467a5a7ad0c040160fedc5a1993cb09ce
+ ### word/settings.xml
+ <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+ <w:settings xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:sl="http://schemas.openxmlformats.org/schemaLibrary/2006/main" mc:Ignorable="w14">
+@@ -1522,9 +1520,6 @@ word/webSettings.xml
+ <w:szCs w:val="18"/>
+ </w:rPr>
+ </w:style>
+-### word/stylesWithEffects.xml sha256=463ae0928cf0d84775dbf8cf18d6c3029f6707c81bf590f6d6dd8757a5e93f15
+-### word/theme/theme1.xml sha256=e3a8ab7db9ca7afca56f5f2820a56e8b660016c647773555b060b0a02ac76941
+-### word/webSettings.xml sha256=349d36de7434d09f86987ff671d8814964a0588c1e630c06e562cda7e75e9f95
+ ### core properties
+ title=Eski Proje Başlığı
+ author=Ali Eski; Ece Yeni
+diff --git a/tests/test_regression_golden.py b/tests/test_regression_golden.py
+index 67cec55..a02fa34 100644
+--- a/tests/test_regression_golden.py
++++ b/tests/test_regression_golden.py
+@@ -4,9 +4,15 @@ The golden files under tests/golden record the exact output of version 2.4.2.
+ Any change to them must be intentional and reviewed. To regenerate after an
+ approved output change, run:
+ 
+-    AIDITOR_UPDATE_GOLDEN=1 python -m unittest tests.test_regression_golden
++    AIDITOR_UPDATE_GOLDEN=1 python -m unittest discover -s tests -p test_regression_golden.py
+ 
++(Windows PowerShell: $env:AIDITOR_UPDATE_GOLDEN="1"; python -m unittest discover -s tests -p test_regression_golden.py)
+ and review the resulting diff before committing.
++
++Comparison ignores line-ending style and trailing spaces at line ends (Git and
++editors may rewrite both; TeX treats them as insignificant). python-docx's
++unchanged template parts are listed by name only, so a dependency upgrade does
++not fail these tests unless the generated document parts change.
+ """
+ import base64
+ import copy
+@@ -48,8 +54,9 @@ JOURNAL = {'journal_name_tr': 'Örnek Bilim Dergisi', 'journal_name_en': 'Sample
+ 
+ 
+ def _normalize_text(value):
+-    # Git may convert line endings on Windows checkouts; content is what matters.
+-    return value.replace('\r\n', '\n')
++    # Git may convert line endings on Windows checkouts and strip trailing
++    # spaces (apply.whitespace=fix, editor settings); content is what matters.
++    return '\n'.join(line.rstrip() for line in value.replace('\r\n', '\n').split('\n'))
+ 
+ 
+ def assert_golden(test, name, actual):
+@@ -85,8 +92,9 @@ def docx_snapshot(blob):
+ 
+     Generated parts (body, headers, footers, settings, relationships and the
+     styles changed by the exporter) are recorded in full. Unchanged template
+-    parts are recorded by digest. Media bytes depend on the installed Pillow
+-    encoder, so only their names and the XML that places them are recorded.
++    parts come from python-docx's bundled template and are listed by name only.
++    Media bytes depend on the installed Pillow encoder, so only their names and
++    the XML that places them are recorded.
+     """
+     from lxml import etree
+     lines = []
+@@ -113,8 +121,8 @@ def docx_snapshot(blob):
+                     style_name = style.find(f'{{{w}}}name')
+                     if style_name is not None and style_name.get(f'{{{w}}}val', '').lower() in SNAPSHOT_STYLES:
+                         lines.append(_xml_lines(etree.tostring(style)))
+-            else:
+-                lines.append(f'### {name} sha256={hashlib.sha256(raw).hexdigest()}')
++            # Other word/ parts (fontTable, numbering, theme, webSettings,
++            # stylesWithEffects) are untouched template data: names only.
+     core = Document(io.BytesIO(blob)).core_properties
+     lines.append('### core properties')
+     lines.extend([f'title={core.title}', f'author={core.author}', f'subject={core.subject}'])
+-- 
+2.43.0
+
